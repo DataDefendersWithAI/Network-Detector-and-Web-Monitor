@@ -5,16 +5,16 @@ import '../App.css'
 const DeviceDashboard = ({ onDeviceClick }) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [devices, setDevices] = useState([
-    { name: 'JakeClark-Sep21st', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '10.0.226.199', mac: '0', status: 'new', connected: true, archived: false },
-    { name: 'Internet', owner: '(unknown)', type: '', favorite: true, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '125.235.239.73', mac: '1', status: 'online', connected: true, archived: false },
-    { name: '(unknown)', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:55', lastSession: '2024-10-14 22:55', lastIP: '192.168.76.21', mac: '2', status: 'offline', connected: false, archived: false },
+    { name: 'JakeClark-Sep21st', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '10.0.226.199', mac: '', status: 'new', connected: true, archived: false },
+    { name: 'Internet', owner: '(unknown)', type: '', favorite: true, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '125.235.239.73', mac: '', status: 'online', connected: true, archived: false },
+    { name: '(unknown)', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:55', lastSession: '2024-10-14 22:55', lastIP: '192.168.76.21', mac: '', status: 'offline', connected: false, archived: false },
   ]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [activeFilters, setActiveFilters] = useState([]);
 
   const handleDeviceClick = (device) => {
     if (onDeviceClick) {
-      onDeviceClick(device.mac);
+      onDeviceClick(device);
     }
   };
 
