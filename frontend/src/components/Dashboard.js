@@ -113,7 +113,7 @@ const DeviceDashboard = ({ onDeviceClick }) => {
 
   return (
     <div className="flex bg-gray-900 text-white min-h-screen">
-      <nav className={`bg-gray-800 flex flex-col transition-all duration-300 ease-in-out ${isNavOpen ? 'w-64' : 'w-16'} overflow-hidden`}>
+      <nav className={`bg-gray-800 flex flex-col transition-all duration-300 ease-in-out ${isNavOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
         <div className="p-4 flex items-center">
           <h1 className={`text-2xl font-bold transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Pi.Alert</h1>
         </div>

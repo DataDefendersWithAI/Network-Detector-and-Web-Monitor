@@ -7,9 +7,6 @@ WORKDIR /usr/src/app
 # Install Django
 RUN pip install django
 
-# Check if the backend project exists, if not create it
-RUN test -d ./manage.py || django-admin startproject backend .
-
 # Install additional Python dependencies (if you have a requirements.txt)
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt || true
