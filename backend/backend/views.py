@@ -1,5 +1,5 @@
 from rest_framework import generics
-from .models import Device
+from .models import Device, Website
 from .serializers import DeviceSerializer
 import requests
 from rest_framework.decorators import api_view
@@ -51,3 +51,17 @@ class SpeedTestView(APIView):
             })
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+        
+# Add website needs to be monitored to the database
+# This view will add a new device to the database.
+# POST parameters: URL, Tag, Device MAC, Monitor All or just Down
+
+class AddWebsiteView(APIView):
+    def post(self, request):
+        url = request.data.get('url')
+        tag = request.data.get('tag')
+        mac = request.data.get('mac')
+        monitor_all = request.data.get('monitor_all')
+        website = Website(url=url, tag=tag, mac=mac, monitor_all=monitor_all)
+        website.save()
+        return Response({'message': 'Website added successfully.'})

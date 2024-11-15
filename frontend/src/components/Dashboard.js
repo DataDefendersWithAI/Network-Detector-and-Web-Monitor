@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, Monitor, Network, Globe, Radio, Calendar, Users, FileText, Settings, HelpCircle, RefreshCw, Menu, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, ChevronDown } from 'lucide-react';
 import '../App.css'
+import Sidebar from './Sidebar';
+import Headerbar from './Headerbar';
 
 const DeviceDashboard = ({ onDeviceClick }) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
@@ -68,18 +70,7 @@ const DeviceDashboard = ({ onDeviceClick }) => {
     return sortableDevices;
   }, [filteredDevices, sortConfig]);
 
-  const NavItem = ({ icon: Icon, label, badge }) => (
-    <div className="relative flex items-center text-gray-300 hover:bg-gray-700 px-4 py-2 cursor-pointer group">
-      <Icon size={20} className="mr-2" />
-      <span className={`transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>{label}</span>
-      {badge && <span className={`ml-auto bg-green-500 text-black text-xs px-2 py-1 rounded transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>{badge}</span>}
-      {!isNavOpen && (
-        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-          {label}
-        </div>
-      )}
-    </div>
-  );
+  
 
   const SortButton = ({ column }) => (
     <button onClick={() => sortData(column)} className="ml-1 focus:outline-none">
@@ -113,44 +104,9 @@ const DeviceDashboard = ({ onDeviceClick }) => {
 
   return (
     <div className="flex bg-gray-900 text-white min-h-screen">
-      <nav className={`bg-gray-800 flex flex-col transition-all duration-300 ease-in-out ${isNavOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
-        <div className="p-4 flex items-center">
-          <h1 className={`text-2xl font-bold transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Pi.Alert</h1>
-        </div>
-        <div className="flex-grow">
-          <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Main Menu</h2>
-          <NavItem icon={Monitor} label="Devices" badge="2 3" />
-          <NavItem icon={Network} label="Network" />
-          <NavItem icon={Globe} label="Web Services" badge="2" />
-          <NavItem icon={Radio} label="ICMP Monitoring" />
-          <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Events & Journal</h2>
-          <NavItem icon={Calendar} label="Events" />
-          <NavItem icon={Users} label="Presence" badge="3/0" />
-          <NavItem icon={FileText} label="Pi.Alert Journal" />
-          <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Settings & Help</h2>
-          <NavItem icon={Settings} label="Settings" />
-          <NavItem icon={HelpCircle} label="Help / FAQ" />
-          <NavItem icon={RefreshCw} label="Update Check" />
-        </div>
-      </nav>
+      <Sidebar isNavOpen={isNavOpen}/>
       <div className="flex-grow">
-        <header className="bg-blue-600 p-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <button onClick={toggleNav} className="text-white mr-4">
-              <Menu size={24} />
-            </button>
-            <h2 className="text-xl">Devices /</h2>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Active</span>
-            </div>
-            <div>Load: 1.56 1.18 1.21</div>
-            <div>Memory usage: 63.5%</div>
-            <div>Temp: 61.0°C</div>
-          </div>
-        </header>
+        <Headerbar toggleNav={toggleNav} />
 
         <main className="p-6">
           <div className="grid grid-cols-6 gap-4 mb-6">
@@ -215,7 +171,7 @@ const DeviceDashboard = ({ onDeviceClick }) => {
           </div>
         </main>
         <footer className="p-4 text-center text-sm text-gray-500">
-          © 2024 Puche & leiwseiab
+          © 2024 JakeClark
         </footer>
       </div>
     </div>
