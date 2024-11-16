@@ -4,8 +4,12 @@ from .serializers import DeviceSerializer
 import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import FileResponse
 import speedtest
 from rest_framework.views import APIView
+from .traffic_analyze import packet_find, summary_packets, show_packets
+from .packet_capture import NetworkTrafficMonitor, network_monitor
+import os
 
 # List all devices (for the dashboard)
 class DeviceListView(generics.ListAPIView):
@@ -65,3 +69,57 @@ class AddWebsiteView(APIView):
         website = Website(url=url, tag=tag, mac=mac, monitor_all=monitor_all)
         website.save()
         return Response({'message': 'Website added successfully.'})
+
+# Return result open pcap file of host machine
+# This view will return the summary and detailed information of packets in a pcap file.
+
+class PcapOpenView(APIView):
+    def post(self, request):
+        pcap_file = request.data.get('pcap_file')
+        if pcap_file is None or pcap_file == "":
+            if os.path.exists("./output.pcap"):
+                pcap_file = "./output.pcap"
+            else:
+                return Response({'error': 'Please provide a pcap file.'})
+        filter = request.data.get('filter')
+        packets = packet_find(pcap_file, filter)
+        packets_summary = summary_packets(packets)
+        packets_show = show_packets(packets)
+        return Response({'summary': packets_summary, 'show': packets_show})
+
+# Capture packets from host machine
+# This view will capture packets from the host machine and save them to a pcap file.
+
+class PcapCaptureView(APIView):
+    def post(self, request):
+        interface = request.data.get('interface')
+        filter = request.data.get('filter')
+        action = request.data.get('action')
+        if action == 'start':
+            network_monitor.reset()
+            network_monitor.interface = interface
+            network_monitor.filter_str = filter
+            network_monitor.start_monitoring()
+            return Response({'message': 'Packet capture started.'})
+        if action == 'stop':
+            network_monitor.stop_monitoring()
+            return Response({'message': 'Packet capture stopped.'})
+        if action == 'save':
+            pcap_file_path = "./output.pcap"
+            if os.path.exists(pcap_file_path):
+                return FileResponse(
+                    open(pcap_file_path, 'rb'),
+                    as_attachment=True,
+                    filename=os.path.basename(pcap_file_path),
+                    content_type='application/vnd.tcpdump.pcap'
+                )
+            else:
+                return Response({'error': 'Pcap file not found.'})
+            
+# Return a list of network interfaces available on the host machine
+# This view will return a list of network interfaces available on the host machine.
+
+class NetworkInterfacesView(APIView):
+    def get(self, request):
+        interfaces = os.listdir('/sys/class/net/')
+        return Response({'interfaces': interfaces})

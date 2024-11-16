@@ -26,4 +26,7 @@ urlpatterns = [
     path('api/devices/<str:mac>/', DeviceDetailView.as_view(), name='device-detail'),
     path('api/web-monitor/', views.WebsiteMonitorView.as_view(), name='website-monitor'),
     path('api/speedtest/', views.SpeedTestView.as_view(), name='speed-test'),
+    path('api/see-packets/', views.PcapOpenView.as_view(), name='see-packets'),
+    path('api/capture-packets/', views.PcapCaptureView.as_view(), name='capture-packets'),
+    path('api/interfaces/', views.NetworkInterfacesView.as_view(), name='interfaces'),
 ]
