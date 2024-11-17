@@ -1,1 +1,8 @@
 scapy
+django-rest-framework
+django-cors-headers
+requests
+speedtest-cli
+traffic
+python-nmap
+colorama

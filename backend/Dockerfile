@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 
 # Install Django
 RUN pip install django
+RUN apt update && apt install libpcap0.8-dev -y && apt install tcpdump -y && apt install iproute2 -y
 
 # Install additional Python dependencies (if you have a requirements.txt)
 COPY requirements.txt ./
@@ -15,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt || true
 COPY . .
 
 # Expose the Django development server port
-EXPOSE 8000
+EXPOSE 3060
 
 # Command to run the Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:3060"]
