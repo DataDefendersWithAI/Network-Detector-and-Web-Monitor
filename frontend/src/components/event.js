@@ -94,6 +94,9 @@ const Events = ({ onEventClick }) => {
             case 'down-alerts': return event.Status === 'offline';
             default: return true;
         }
+        if (!searchQuery) return true;
+        return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+
     });
    
 
