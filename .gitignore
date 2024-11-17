@@ -1,30 +1,30 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/**/*$py.class
 
 # C extensions
-*.so
+backend/*.so
 
 # Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+backend/**/.Python
+backend/**/build/
+backend/**/develop-eggs/
+backend/**/dist/
+backend/**/downloads/
+backend/**/eggs/
+backend/**/.eggs/
+backend/**/lib/
+backend/**/lib64/
+backend/**/parts/
+backend/**/sdist/
+backend/**/var/
+backend/**/wheels/
+backend/**/share/python-wheels/
+backend/**/*.egg-info/
+backend/**/.installed.cfg
+backend/**/*.egg
+backend/**/MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -37,29 +37,29 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+backend/**/htmlcov/
+backend/**/.tox/
+backend/**/.nox/
+backend/**/.coverage
+backend/**/.coverage.*
+backend/**/.cache
+backend/**/nosetests.xml
+backend/**/coverage.xml
+backend/**/*.cover
+backend/**/*.py,cover
+backend/**/.hypothesis/
+backend/**/.pytest_cache/
+backend/**/cover/
 
 # Translations
 *.mo
 *.pot
 
 # Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+backend/**/*.log
+backend/**/local_settings.py
+backend/**/db.sqlite3
+backend/**/db.sqlite3-journal
 
 # Flask stuff:
 instance/
