@@ -1,11 +1,13 @@
-from rest_framework import generics
 from .models import Device, Website, SpeedTest
 from .serializers import DeviceSerializer
-import requests
+
+from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import speedtest
 from rest_framework.views import APIView
+
+import speedtest
+import requests
 
 # List all devices (for the dashboard)
 class DeviceListView(generics.ListAPIView):

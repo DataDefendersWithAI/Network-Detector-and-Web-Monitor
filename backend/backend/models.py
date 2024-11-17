@@ -10,17 +10,18 @@ class Device(models.Model):
         return self.name
 # Website model
 class Website(models.Model):
-    url = models.URLField(max_length=200)
+    url = models.URLField(max_length=200, primary_key=True)
     tag = models.CharField(max_length=100, default='Default')
-    mac = models.CharField(max_length=17, primary_key=True)
-    monitor_all = models.BooleanField()
+    monitor_all = models.BooleanField(default=False)
+    monitor_down = models.BooleanField(default=False)
+    dest_ip = models.GenericIPAddressField(null=True, blank=True)
     
     def __str__(self):
         return self.tag
     
 # Website List of monitored results
 class WebsiteResult(models.Model):
-    website = models.ForeignKey(Website, on_delete=models.CASCADE, to_field='mac')
+    website = models.ForeignKey(Website, on_delete=models.CASCADE, to_field='url')
     status_code = models.IntegerField()
     latency = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,1 +1,4 @@
 scapy
+django-cors-headers
+django
+django-rest-framework

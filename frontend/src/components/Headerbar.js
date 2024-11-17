@@ -8,7 +8,6 @@ const Headerbar = ({ toggleNav }) => (
       <button onClick={toggleNav} className="text-white mr-4">
         <Menu size={24} />
       </button>
-      <h2 className="text-xl">Devices /</h2>
     </div>
     <div className="flex items-center space-x-2">
       <div className="flex items-center space-x-1">

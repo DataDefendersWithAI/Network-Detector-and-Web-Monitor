@@ -17,7 +17,7 @@ const Speedtest = ({ onDeviceClick }) => {
     // Function to fetch the speed test history
     const fetchSpeedTestHistory = async () => {
         try {
-        const response = await axios.get('http://localhost:8000/api/speedtest/?action=list');
+        const response = await axios.get('http://localhost:3060/api/speedtest/?action=list');
         setSpeedTestHistory(response.data);
         } catch (error) {
         console.error('Error fetching speed test history:', error);
@@ -28,7 +28,7 @@ const Speedtest = ({ onDeviceClick }) => {
     const handleSpeedTest = async () => {
         setIsRunning(true); // Show "Running..." state
         try {
-        await axios.get('http://localhost:8000/api/speedtest/');
+        await axios.get('http://localhost:3060/api/speedtest/');
         await fetchSpeedTestHistory(); // Refresh the history after the speed test completes
         } catch (error) {
         console.error('Error running speed test:', error);
@@ -40,7 +40,7 @@ const Speedtest = ({ onDeviceClick }) => {
     // Function to delete a speed test record
     const deleteSpeedTest = async (created_at) => {
         try {
-        await axios.delete(`http://localhost:8000/api/speedtest/?date=${created_at}/`);
+        await axios.delete(`http://localhost:3060/api/speedtest/?date=${created_at}/`);
         await fetchSpeedTestHistory(); // Refresh the history after the speed test completes
         } catch (error) {
         console.error('Error deleting speed test:', error);
@@ -67,7 +67,9 @@ const Speedtest = ({ onDeviceClick }) => {
                         <div className="rounded-lg shadow">
                             <div className="flex justify-start items-center mb-4 *:mr-5">
                                 <h2 className="text-xl font-bold">Web Services</h2>
-                                <button className="bg-blue-500 text-white rounded-full p-1 px-3">+</button>
+                                <button className="bg-blue-500 text-white rounded-full p-1 px-3">
+                                    <Plus className="w-5 h-5" />
+                                </button>
                             </div>
                             <table className="min-w-full text-left">
                             <thead className="w-full">
