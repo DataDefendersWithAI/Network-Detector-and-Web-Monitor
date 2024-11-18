@@ -1,12 +1,13 @@
-from scapy.all import sniff, wrpcap, PcapWriter
+from scapy.all import sniff, wrpcap, PcapWriter, rdpcap
 from colorama import Fore, Style
-import time
-import os
 from threading import Thread
+import time
 
+OPENED_PCAP_FILE = "./opened.pcap"
+CAPTURED_PCAP_FILE = "./captured.pcap"
 
 class NetworkTrafficMonitor:
-    def __init__(self, interface=None, filter_str=None, pcap_file="./output.pcap"):
+    def __init__(self, interface=None, filter_str=None, pcap_file=None):
         self.interface = interface
         self.filter_str = filter_str
         self.pcap_file = pcap_file
@@ -39,20 +40,28 @@ class NetworkTrafficMonitor:
         print(f"{Fore.YELLOW}Stopping packet capture...{Style.RESET_ALL}")
         self.pcap_writer.close()
         print(f"{Fore.GREEN}Packet capture saved to {self.pcap_file}{Style.RESET_ALL}")
-        # terminate the sniffing thread
         self.sniff_thread.join()
-        # clear the pcap file if the capture was stopped
-        # self.__init__(self.interface, self.filter_str, self.pcap_file)
 
+    def find_packets(self, filter=None):
+        pkts = rdpcap(self.pcap_file) 
+        pkts_dict = {}
+        if filter == None or filter == "":
+            for i, pkt in enumerate(pkts):
+                pkts_dict[i + 1] = pkt
+            return pkts_dict
+        pkts_filtered = sniff(offline=pkts, filter=filter)
+        for i, pkt in enumerate(pkts_filtered):
+            pkts_dict[pkts.index(pkt) + 1] = pkt
+        return pkts_dict
 
-network_monitor = NetworkTrafficMonitor()
-if __name__ == "__main__":
-    # Example usage
-    interface = "wlp0s20f3"  # Replace with your network interface
-    filter_str = ""  # Capture only TCP packets on port 80
-    monitor = NetworkTrafficMonitor(interface, filter_str)
-    monitor.start_monitoring()
-    # Capture for 10 seconds
-    time.sleep(5)
-    print("Stopping packet capture...")
-    monitor.stop_monitoring()
+    def summary_packets(self, filtered_packets, packet_number=None):
+        if packet_number == None or packet_number == "":
+            return {k: v.summary() for k, v in filtered_packets.items()}
+        filtered_packets = filtered_packets[packet_number]
+        return filtered_packets.summary()
+
+    def show_packets(self, filtered_packets, packet_number=None):
+        if packet_number == None or packet_number == "":
+            return {k: v.show(dump=True) for k, v in filtered_packets.items()}
+        filtered_packets = filtered_packets[packet_number]
+        return filtered_packets.show(dump=True)
