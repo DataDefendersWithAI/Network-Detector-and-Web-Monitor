@@ -1,30 +1,26 @@
 import { savePcapFile } from "./Utils.js";
 
 
-// function to fetch packets captured by the API
-export async function fetchPackets(
+export async function fetchOpenPackets(
   file,
   filter,
   setFilteredPacketsShow,
   setFilteredPacketsSummary
 ) {
   const formData = new FormData();
-  if (file) {
+  if (file)
     formData.append("pcap_file", file);
-  }
   formData.append("filter", filter);
 
   try {
-    const response = await fetch("http://localhost:3060/api/see-packets/", {
+    const response = await fetch("http://localhost:3060/api/view-pcap/", {
       method: "POST",
       body: formData,
     });
 
     if (response.ok) {
       const parsedPackets = await response.json();
-      console.log(parsedPackets);
       setFilteredPacketsShow(Object.entries(parsedPackets.show).map(([key, value]) => `${value}`));
-      // dict to array add space between key and value
       setFilteredPacketsSummary(Object.entries(parsedPackets.summary).map(([key, value]) => `${key}: ${value}`));
     } else {
       console.error("Failed to fetch packets");
@@ -34,15 +30,12 @@ export async function fetchPackets(
   }
 }
 
-// function to start call API and start capture
-export async function startCaptureCall(
-  filter,
-  networkInterface
-) {
+export async function handleCaptureAction(action, filter = "", networkInterface = "", setFilteredPacketsShow = null, setFilteredPacketsSummary = null) {
   const formData = new FormData();
-  formData.append("filter", filter);
-  formData.append("interface", networkInterface);
-  formData.append("action", "start");
+  formData.append("action", action);
+
+  if (filter) formData.append("filter", filter);
+  if (networkInterface) formData.append("interface", networkInterface);
 
   try {
     const response = await fetch("http://localhost:3060/api/capture-packets/", {
@@ -51,59 +44,22 @@ export async function startCaptureCall(
     });
 
     if (response.ok) {
-      console.log("Capture started");
-      console.log("filter", filter);
-      console.log("interface", networkInterface);
+      if (action === "save") {
+        const pcapContent = await response.arrayBuffer();
+        savePcapFile(pcapContent, "capture.pcap");
+      } else if (action === "start") {
+        // console.log("Capture started");
+      } else if (action === "stop") {
+        // console.log("Capture stopped");
+      }
     } else {
-      console.error("Failed to fetch packets");
+      console.error(`Failed to ${action} capture`);
     }
   } catch (error) {
-    console.error("Error:", error);
+    console.error(`Error during ${action} capture:`, error);
   }
 }
 
-// function to stop call API and stop capture
-export async function stopCaptureCall() {
-  try {
-    const response = await fetch("http://localhost:3060/api/capture-packets/", {
-      method: "POST",
-      body: JSON.stringify({ action: "stop" }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      console.log("Capture stopped");
-    } else {
-      console.error("Failed to stop capture");
-    }
-  } catch (error) {
-    console.error("Error stopping capture:", error);
-  }
-}
-
-// function to download the pcap file
-export async function downloadPcapWithFilename() {
-  try {
-    const response = await fetch("http://localhost:3060/api/capture-packets/", {
-      method: "POST",
-      body: JSON.stringify({ action: "save" }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      const pcapContent = await response.arrayBuffer();
-
-      // Prompt user for a filename
-      savePcapFile(pcapContent, "capture.pcap");
-    } else {
-      console.error("Failed to fetch PCAP file");
-    }
-  } catch (error) {
-    console.error("Error downloading PCAP:", error);
-  }
-}
-
-// function to fetch network interfaces
 export async function getNetworkInterfaces(setNetworkInterfaces) {
   try {
     const response = await fetch("http://localhost:3060/api/interfaces/", {
@@ -113,7 +69,7 @@ export async function getNetworkInterfaces(setNetworkInterfaces) {
     if (response.ok) {
       const interfaces = await response.json().then((data) => data.interfaces);
       setNetworkInterfaces(interfaces);
-      console.log("Interfaces fetched");
+      // console.log("Interfaces fetched");
     } else {
       console.error("Failed to fetch interfaces");
     }
