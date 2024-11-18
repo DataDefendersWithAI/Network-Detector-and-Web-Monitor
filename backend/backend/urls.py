@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/web-monitor/', views.WebsiteMonitorView.as_view(), name='website-monitor'),
     path('api/speedtest/', views.SpeedTestView.as_view(), name='speed-test'),
     path('api/add-website/', views.AddWebsiteView.as_view(), name='add-website'),
-    path('api/see-packets/', views.PcapOpenView.as_view(), name='see-packets'),
+    path('api/view-pcap/', views.PcapOpenView.as_view(), name='view-pcap'),
     path('api/capture-packets/', views.PcapCaptureView.as_view(), name='capture-packets'),
     path('api/interfaces/', views.NetworkInterfacesView.as_view(), name='interfaces')
 ]
