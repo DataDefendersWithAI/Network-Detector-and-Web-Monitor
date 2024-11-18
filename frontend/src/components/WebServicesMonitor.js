@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import Headerbar from './Headerbar';
 import axios from 'axios';
 
-const Speedtest = ({ onDeviceClick }) => {
+const WebServicesMonitor = ({ onDeviceClick }) => {
     const [isNavOpen, setIsNavOpen] = useState(true);
     const [speedTestHistory, setSpeedTestHistory] = useState([]);
     const [isRunning, setIsRunning] = useState(false);
@@ -58,7 +58,7 @@ const Speedtest = ({ onDeviceClick }) => {
             <Sidebar isNavOpen={isNavOpen} />
             <div className="flex-grow">
                 {/* Headerbar */}
-                <Headerbar toggleNav={toggleNav} />
+                <Headerbar toggleNav={toggleNav} headerContent={"Web Services"}/>
                 <main className="p-6">
                     <div className="bg-gray-800 rounded-lg p-4">
                         {/* Content */}
@@ -147,4 +147,4 @@ const Speedtest = ({ onDeviceClick }) => {
     );
 }
 
-export default Speedtest;
+export default WebServicesMonitor;
