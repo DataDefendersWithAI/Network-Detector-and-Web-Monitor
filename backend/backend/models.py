@@ -12,9 +12,9 @@ class Device(models.Model):
 class Website(models.Model):
     url = models.URLField(max_length=200, primary_key=True)
     tag = models.CharField(max_length=100, default='Default')
-    monitor_all = models.BooleanField(default=False)
-    monitor_down = models.BooleanField(default=False)
-    dest_ip = models.GenericIPAddressField(null=True, blank=True)
+    monitor_all_events = models.BooleanField(default=False)
+    monitor_down_events = models.BooleanField(default=False)
+    dest_ip = models.GenericIPAddressField(null=True, blank=True) # Destination IP address, default is None
     
     def __str__(self):
         return self.tag
@@ -25,6 +25,7 @@ class WebsiteResult(models.Model):
     status_code = models.IntegerField()
     latency = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
+    note = models.CharField(max_length=100, blank=True)
     
     def __str__(self):
         return self.website.tag

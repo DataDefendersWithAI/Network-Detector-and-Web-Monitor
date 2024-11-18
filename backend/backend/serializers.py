@@ -9,12 +9,12 @@ class DeviceSerializer(serializers.ModelSerializer):
 class WebsiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Website
-        fields = ['url', 'tag', 'monitor_all', 'monitor_down']
+        fields = ['url', 'tag', 'monitor_all', 'monitor_down', 'dest_ip']
 
 class WebsiteResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = WebsiteResult
-        fields = ['website', 'status_code', 'latency', 'created_at']
+        fields = ['website', 'status_code', 'latency', 'created_at', 'note']
 
 class SpeedTestSerializer(serializers.ModelSerializer):
     class Meta:
