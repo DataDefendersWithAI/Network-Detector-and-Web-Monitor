@@ -11,7 +11,7 @@ const Events = ({ onEventClick }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [events, setEvents] = useState([
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
+        { name: 'JakeClark-Sep21st', owner: 'Alan', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
         { name: 'JakeClark-Sepst', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
@@ -86,7 +86,9 @@ const Events = ({ onEventClick }) => {
     
     // -  ko sử dụng mãng nên ta ko sử dụng cách cú pháp như .includes và .some để làm 
     const filteredEvents = events.filter(event => {
-        if (!activeFilters) return true;
+
+        if (!searchQuery) {
+            if (!activeFilters) return true;
         switch (activeFilters) {
             // - Filter by event type and status (ask for more case if you need)
             case 'connected': return event.connected; 
@@ -94,10 +96,25 @@ const Events = ({ onEventClick }) => {
             case 'down-alerts': return event.Status === 'offline';
             default: return true;
         }
-        if (!searchQuery) return true;
-        return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
-
+        }
+        // [selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase()) dùng để query theo thứ đã chọn trong input search 
+        else {
+            if(!selectedItem)   return Object.values(event).some(value =>
+                typeof value === "string" && value.toLowerCase().includes(searchQuery.toLowerCase()));
+            else {
+                if (!activeFilters) return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                switch (activeFilters) {
+                    // - Filter by event type and status (ask for more case if you need)
+                    case 'connected': return event.connected[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase()); 
+                    case 'new': return (event.Status === 'new')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    case 'down-alerts': return (event.Status === 'offline')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    default: return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+            }
+           
+        }
+        }
     });
+
    
 
    
@@ -190,6 +207,7 @@ const Events = ({ onEventClick }) => {
                                 <div className='flex items-center mr-2'>Search</div> 
                                 <select className="bg-gray-700 text-white px-2 py-1 rounded mr-2" value={selectedItem}
                                 onChange={(e) => setSelectedItem(e.target.value)}>
+                                    <option value={''}      >None</option>
                                     <option value={'name'}  >name</option>
                                     <option value={'owner'} >owner</option>
                                     <option value={'Date'}  >Date</option>
@@ -224,7 +242,7 @@ const Events = ({ onEventClick }) => {
                             </tbody>
                         </table> 
                         <div className="mt-4 text-sm">
-                            Showing 1 to {Math.min(sortedEvents.length,selectedValue)} of {sortedEvents.length} entries
+                            Showing {Math.min(sortedEvents.length,selectedValue)} of {sortedEvents.length} entries
                         </div> 
                     </div>         
                 </main>
