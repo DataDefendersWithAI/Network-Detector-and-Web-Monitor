@@ -4,24 +4,22 @@ import Sidebar from "./Sidebar";
 import "../App.css";
 import Headerbar from "./Headerbar";
 import {
-  downloadPcapWithFilename,
-  fetchPackets,
-  startCaptureCall,
-  stopCaptureCall,
-  getNetworkInterfaces,
+  fetchOpenPackets,
+  handleCaptureAction,
+  getNetworkInterfaces
 } from "./Api_call";
 
 const PacketCapture = () => {
-  const [isNavOpen, setIsNavOpen] = useState(true);
-  const [filter, setFilter] = useState("");
-  const [filteredPacketsShow, setFilteredPacketsShow] = useState([]);
   const [filteredPacketsSummary, setFilteredPacketsSummary] = useState([]);
   const [selectedPacketIndex, setSelectedPacketIndex] = useState(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [file, setFile] = useState(null);
-  const [networkInterface, setNetworkInterface] = useState("");
+  const [filteredPacketsShow, setFilteredPacketsShow] = useState([]);
   const [networkInterfaces, setNetworkInterfaces] = useState([]);
-  const [saveMessage, setSaveMessage] = useState(""); // Save notification state
+  const [networkInterface, setNetworkInterface] = useState("");
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [filter, setFilter] = useState("");
+  const [file, setFile] = useState(null);
 
   const toggleNav = () => {
     setIsNavOpen(!isNavOpen);
@@ -30,8 +28,7 @@ const PacketCapture = () => {
   // Add event listener to stop capturing on page unload
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      stopCaptureCall();
-      console.log("Capture stopped on page unload");
+      handleCaptureAction("stop");
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -43,7 +40,6 @@ const PacketCapture = () => {
     };
   }, []);
 
-  // Function to reload network interfaces
   const reloadInterfaces = () => {
     try {
       getNetworkInterfaces(setNetworkInterfaces); // Replace with your API call to fetch interfaces
@@ -56,7 +52,6 @@ const PacketCapture = () => {
     }
   };
 
-  // function handle start capture button
   const handleStartCapture = () => {
     if (networkInterface === "") {
       setSaveMessage("Select an interface to start capturing");
@@ -66,27 +61,22 @@ const PacketCapture = () => {
     if (!isCapturing) {
       setIsCapturing(true);
       setFile(null);
-      setFilteredPacketsShow([]);
-      setFilteredPacketsSummary([]);
       setSaveMessage("Capturing packets...");
-      console.log("filter", filter);
-      console.log("interface", networkInterface);
-      startCaptureCall(filter, networkInterface);
+      handleCaptureAction("start",filter,networkInterface);
     }
   };
 
-  // function handle stop capture button
   const handleStopCapture = async () => {
     if (isCapturing) {
       // make the last fetch call to get the last packets
       setIsCapturing(false);
-      await fetchPackets(
-        null,
+      await fetchOpenPackets(
+        file,
         filter,
         setFilteredPacketsShow,
         setFilteredPacketsSummary
       ).then(() => {
-        stopCaptureCall();
+        handleCaptureAction("stop");
       });
 
       setSaveMessage("Stopped capturing packets");
@@ -99,9 +89,11 @@ const PacketCapture = () => {
     if (isCapturing) {
       setSaveMessage("Cannot save live packets");
       setTimeout(() => setSaveMessage(""), 3000);
-    } else if (filteredPacketsShow.length > 0 && file === null) {
-      console.log("saving");
-      downloadPcapWithFilename();
+    } else if (filteredPacketsShow.length > 0) {
+      handleCaptureAction("save");
+    } else {
+      setSaveMessage("No packets to save");
+      setTimeout(() => setSaveMessage(""), 3000);
     }
   };
 
@@ -109,24 +101,22 @@ const PacketCapture = () => {
     setSelectedPacketIndex(index);
   };
 
-  const handleOpenPcap = async (event) => {
+  const handleOpenPcap = (event) => {
     if (isCapturing) {
       setSaveMessage("Cannot open PCAP file while capturing");
       setTimeout(() => setSaveMessage(""), 3000);
       return;
     }
-    setFile(event.target.files[0]);
-    if (file) {
-      fetchPackets(
-        file,
-        filter,
-        setFilteredPacketsShow,
-        setFilteredPacketsSummary
-      );
-    } else if (!file) {
-      setSaveMessage("No file selected");
-      setTimeout(() => setSaveMessage(""), 3000);
-    }
+
+    const target_file = event.target.files[0];
+    setFile(target_file);
+
+    fetchOpenPackets(
+      target_file,
+      filter,
+      setFilteredPacketsShow,
+      setFilteredPacketsSummary
+    );
   };
 
   const handleFilterChange = (event) => {
@@ -138,16 +128,9 @@ const PacketCapture = () => {
       setSaveMessage("Cannot apply filter to live packets");
       setTimeout(() => setSaveMessage(""), 3000);
       return;
-    } else if (file) {
-      fetchPackets(
+    } else {
+      fetchOpenPackets(
         file,
-        filter,
-        setFilteredPacketsShow,
-        setFilteredPacketsSummary
-      );
-    } else if (!file) {
-      fetchPackets(
-        null,
         filter,
         setFilteredPacketsShow,
         setFilteredPacketsSummary
@@ -157,8 +140,8 @@ const PacketCapture = () => {
 
   const handleUpdateButton = () => {
     if (isCapturing) {
-      fetchPackets(
-        null,
+      fetchOpenPackets(
+        file,
         filter,
         setFilteredPacketsShow,
         setFilteredPacketsSummary
