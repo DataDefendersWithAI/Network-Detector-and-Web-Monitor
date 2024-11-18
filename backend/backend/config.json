@@ -1,0 +1,15 @@
+{
+    "cronjob": {
+        "speedtest": {
+            "enabled": true,
+            "interval": 60
+        },
+        "web-monitor": {
+            "enabled": true,
+            "interval": 60
+        }
+    },
+    "server": {
+        "port": 3060
+    }
+}

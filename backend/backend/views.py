@@ -1,15 +1,19 @@
-from rest_framework import generics
 from .models import Device, Website, SpeedTest
 from .serializers import DeviceSerializer
-import requests
+from .cron import run_speed_test, run_website_monitor
+
+from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import FileResponse
-import speedtest
+
 from rest_framework.views import APIView
 from .traffic_analyze import packet_find, summary_packets, show_packets
 from .packet_capture import NetworkTrafficMonitor, network_monitor
 import os
+
+import speedtest
+import requests
 
 # List all devices (for the dashboard)
 class DeviceListView(generics.ListAPIView):
@@ -55,15 +59,7 @@ class SpeedTestView(APIView):
             } for speed_test in speed_tests])
         # If list is None, run a new speed test
         try:
-            st = speedtest.Speedtest(secure=True)
-            st.get_best_server()
-            download_speed = st.download() / 10**6  # Mbps
-            upload_speed = st.upload() / 10**6      # Mbps
-            ping = st.results.ping
-
-            # Save the speed test results to the database
-            speed_test = SpeedTest(download_speed=download_speed, upload_speed=upload_speed, ping=ping)
-            speed_test.save()
+            download_speed, upload_speed, ping = run_speed_test()  
 
             return Response({
                 'download_speed': round(download_speed, 2),
@@ -90,9 +86,9 @@ class AddWebsiteView(APIView):
         url = request.data.get('url')
         tag = request.data.get('tag')
         mac = request.data.get('mac')
-        print(url, tag, mac)
-        monitor_all = request.data.get('monitor_all')
-        website = Website(url=url, tag=tag, mac=mac, monitor_all=monitor_all)
+        all_events = request.data.get('all_events')
+        all_down_events = request.data.get('all_down_events')
+        website = Website(url=url, tag=tag, mac=mac, monitor_all_events=all_events, monitor_down_events=all_down_events)
         website.save()
         return Response({'message': 'Website added successfully.'})
 

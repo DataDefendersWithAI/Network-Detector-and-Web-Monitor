@@ -1,6 +1,7 @@
 scapy
-django-rest-framework
 django-cors-headers
+django
+django-rest-framework
 requests
 speedtest-cli
 traffic

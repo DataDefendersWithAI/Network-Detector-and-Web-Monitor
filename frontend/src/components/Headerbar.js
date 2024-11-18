@@ -2,13 +2,13 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
 
-const Headerbar = ({ toggleNav }) => (
+const Headerbar = ({ toggleNav, headerContent }) => (
   <header className="bg-blue-600 p-4 flex justify-between items-center">
     <div className="flex items-center">
       <button onClick={toggleNav} className="text-white mr-4">
         <Menu size={24} />
       </button>
-      <h2 className="text-xl">Devices /</h2>
+      <h1 className="text-white text-2xl">{headerContent}</h1>
     </div>
     <div className="flex items-center space-x-2">
       <div className="flex items-center space-x-1">
