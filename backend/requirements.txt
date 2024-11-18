@@ -2,6 +2,7 @@ scapy
 django-cors-headers
 django
 django-rest-framework
+django-crontab
 requests
 speedtest-cli
 traffic
