@@ -2,3 +2,8 @@ scapy
 django-cors-headers
 django
 django-rest-framework
+requests
+speedtest-cli
+traffic
+python-nmap
+colorama

@@ -1,6 +1,6 @@
 // Sidebar.js
 import React from 'react';
-import { Monitor, Network, Globe, Radio, Calendar, Users, FileText, Settings, HelpCircle, RefreshCw } from 'lucide-react';
+import { Monitor, Network, Globe, Radio, Calendar, Users, FileText, Settings, HelpCircle, RefreshCw, FileSearch} from 'lucide-react';
 import '../App.css';
 // Import REST API
 import { useNavigate } from 'react-router-dom';
@@ -37,6 +37,7 @@ const Sidebar = ({ isNavOpen }) => {
         {/* When user click on Web Service button, redirect to /web-services */}
         <NavItem icon={Globe} label="Web Services" badge="2" isNavOpen={isNavOpen} path={"/web-services"}/>
         <NavItem icon={Radio} label="ICMP Monitoring" isNavOpen={isNavOpen}/>
+        <NavItem icon={FileSearch} label="Package Capture" isNavOpen={isNavOpen} path={"/package-capture"}/>
         <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Events & Journal</h2>
         <NavItem icon={Calendar} label="Events" isNavOpen={isNavOpen}/>
         {/* <NavItem icon={Users} label="Presence" badge="3/0" isNavOpen={isNavOpen}/> */}

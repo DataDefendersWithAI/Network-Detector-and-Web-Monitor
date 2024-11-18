@@ -186,5 +186,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+
 # Migration files
 backend/**/migrations/*.py
+# pcap files
+**/*.pcap
