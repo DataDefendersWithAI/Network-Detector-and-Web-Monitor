@@ -7,6 +7,8 @@ import Headerbar from './Headerbar';
 const Events = ({ onEventClick }) => {
     const [isNavOpen, setIsNavOpen] = useState(true);
     const [selectedValue, setSelectedValue] = useState(10);
+    const [currebtPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 5; 
     const [selectedItem, setSelectedItem] = useState('name');
     const [searchQuery, setSearchQuery] = useState('');
     const [events, setEvents] = useState([
@@ -174,6 +176,30 @@ const Events = ({ onEventClick }) => {
     //     }));
     // };
 
+    // -------------------------------------------- Pagination -----------------------------------------------
+
+        // lấy danh sách cách items sẽ xuất hiện trên trang 
+        const paginatedEvents = React.useMemo(() => {
+            const startIndex = (currebtPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            return sortedEvents.slice(startIndex, endIndex);
+        }, [sortedEvents, currebtPage]);
+        
+        // Tính tổng số trang
+        const totalPages = Math.ceil(sortedEvents.length / ITEMS_PER_PAGE);
+
+        const handleNextPage = () => {
+            if (currebtPage < totalPages) setCurrentPage(currebtPage + 1);
+        };
+
+        const handlePreviousPage = () => {
+            if (currebtPage > 1) setCurrentPage(currebtPage - 1);
+        };
+
+
+
+    // -------------------------------------------------------------------------------------------------------
+    
     return (
         <div className="flex bg-gray-900 text-white min-h-screen">
             <Sidebar isNavOpen={isNavOpen}/>
@@ -229,7 +255,7 @@ const Events = ({ onEventClick }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {sortedEvents.slice(0,Math.min(selectedValue,sortedEvents.length)).map((event, index) => (
+                                {paginatedEvents.slice(0,Math.min(selectedValue,paginatedEvents.length)).map((event, index) => (
                                     <tr key={index} className="hover:bg-gray-700 cursor-pointer" onClick={() => handleEventClick(event)} >
                                         <td className="py-2 text-blue-400"  >{event.name}</td>
                                         <td>{event.owner}</td>
