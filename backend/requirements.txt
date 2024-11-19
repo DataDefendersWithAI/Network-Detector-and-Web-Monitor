@@ -8,3 +8,9 @@ speedtest-cli
 traffic
 python-nmap
 colorama
+transformers
+torch
+werkzeug
+pandas
+matplotlib
+networkx
