@@ -205,8 +205,8 @@ class TrafficAnalysis:
                                     print("Class probabilities:", probabilities.tolist())
 
     def generate_graph(self, data, title, graph_color, xtext, ytext):
+        plt.figure(figsize=(12, 8))  # Increase the figure size for better visibility
         plt.bar(data.keys(), data.values(), color=graph_color, width=0.7)
-        # plt.ylim(0, 50)
         plt.xlabel(xtext, weight='bold')
         plt.xticks(rotation=45, ha='right')
         plt.ylabel(ytext, weight='bold')
@@ -288,7 +288,6 @@ class TrafficAnalysis:
         try:
             self.packets_brief.clear()
 
-            print("FILTER VALUE : ", self.filter)
             if len(self.filter) > 0:
                 self.predictingRowsCategoryOnGPU(self.file_path, self.filter.encode('utf-8'), False) # Will take care of saving data in packets_brief
             else:
