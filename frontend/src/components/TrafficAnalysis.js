@@ -131,21 +131,25 @@ const TrafficAnalysis = () => {
               {graphs.graph1 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Identified Attacks 🚨​​</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph1}`}
-                    alt="Graph 1"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph1}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph1}`}
+                      alt="Graph 1"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
               {graphs.graph2 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Protocols 🔎</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph2}`}
-                    alt="Graph 2"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph2}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph2}`}
+                      alt="Graph 2"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
             </div>
@@ -153,21 +157,25 @@ const TrafficAnalysis = () => {
               {graphs.graph3 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Network Endpoints 🌐</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph3}`}
-                    alt="Graph 3"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph3}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph3}`}
+                      alt="Graph 3"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
               {graphs.graph4 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">TCP Ports 🛜</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph4}`}
-                    alt="Graph 4"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph4}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph4}`}
+                      alt="Graph 4"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
             </div>
