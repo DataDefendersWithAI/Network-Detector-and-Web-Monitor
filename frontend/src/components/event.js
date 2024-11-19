@@ -8,7 +8,7 @@ const Events = ({ onEventClick }) => {
     const [isNavOpen, setIsNavOpen] = useState(true);
     const [selectedValue, setSelectedValue] = useState(10);
     const [currebtPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 5; 
+    const ITEMS_PER_PAGE = 1; 
     const [selectedItem, setSelectedItem] = useState('name');
     const [searchQuery, setSearchQuery] = useState('');
     const [events, setEvents] = useState([
@@ -186,7 +186,7 @@ const Events = ({ onEventClick }) => {
         }, [sortedEvents, currebtPage]);
         
         // Tính tổng số trang
-        const totalPages = Math.ceil(sortedEvents.length / ITEMS_PER_PAGE);
+        const totalPages = Math.ceil(Math.min(sortedEvents.length,selectedValue) / ITEMS_PER_PAGE);
 
         const handleNextPage = () => {
             if (currebtPage < totalPages) setCurrentPage(currebtPage + 1);
@@ -196,12 +196,85 @@ const Events = ({ onEventClick }) => {
             if (currebtPage > 1) setCurrentPage(currebtPage - 1);
         };
 
+        // Tạo nút phân trang
+        const paginationContainer = document.getElementById('pagination_container');
+        if (paginationContainer) {
+            const fragment = document.createDocumentFragment(); // DOM ảo
+            paginationContainer.innerHTML = '';
+            if (currebtPage + 5 >= totalPages) {
+                if( totalPages <= 5) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const button = createPaginationButton(i, currebtPage);
+                        fragment.appendChild(button);
+                    }
+                }
+                else {
+                    if(totalPages - currebtPage > 4 )
+                    {
+                        for (let i = totalPages - 5; i <= totalPages; i++) {
+                            const button = createPaginationButton(i, currebtPage);
+                            fragment.appendChild(button);
+                        }
+                    }
+                    else {
+                        const a = totalPages - currebtPage;
+                        for (let i = totalPages - a; i <= totalPages; i++) {
+                            if(i === totalPages - a)
+                            {
+                                const dots = document.createElement("span");
+                                dots.textContent = "...";
+                                dots.className = "ml-1";
+                                fragment.appendChild(dots);
+                                const button = createPaginationButton(i, currebtPage);
+                                fragment.appendChild(button);
+                            }
+                            else
+                            {
+                            const button = createPaginationButton(i, currebtPage);
+                            fragment.appendChild(button);
+                            }
+                        }
+                    }
+                }
+            }
+            else 
+            {
+                for(let i = currebtPage; i <= currebtPage + 5; i++) {
+                    if ( i!= currebtPage +2 )
+                    {
+                        const button = createPaginationButton(i, currebtPage);
+                        fragment.appendChild(button);
+                    }
+                    else 
+                    {   
+                        const button = createPaginationButton(i, currebtPage);
+                        fragment.appendChild(button);
+
+                        const dots = document.createElement("span");
+                        dots.textContent = "...";
+                        dots.className = "ml-1";
+                        fragment.appendChild(dots);
+                    } 
+
+                }
+            }
+            paginationContainer.appendChild(fragment); // Thêm tất cả vào DOM cùng lúc
+        };
+
+        function createPaginationButton(page, currentPage) {
+            const button = document.createElement('button');
+            button.textContent = page;
+            button.className = `px-2 py-1 rounded ml-1 w-8 ${page === currentPage ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'}`;
+            button.addEventListener('click', () => setCurrentPage(page));
+            return button;
+        }
+
 
 
     // -------------------------------------------------------------------------------------------------------
     
     return (
-        <div className="flex bg-gray-900 text-white min-h-screen">
+        <div className="flex bg-gray-900 text-white min-h-screen ">
             <Sidebar isNavOpen={isNavOpen}/>
             <div className="flex-grow">
                 <Headerbar toggleNav={toggleNav} />
@@ -267,9 +340,18 @@ const Events = ({ onEventClick }) => {
                                 ))}
                             </tbody>
                         </table> 
-                        <div className="mt-4 text-sm">
-                            Showing {Math.min(sortedEvents.length,selectedValue)} of {sortedEvents.length} entries
-                        </div> 
+                        <div className='flex justify-between'>
+                           
+                            <div className="mt-4 text-sm">
+                                Showing {Math.min(sortedEvents.length,selectedValue)} of {sortedEvents.length} entries
+                            </div> 
+                            <div className="flex mt-3 text-sm" >
+                                <button className="flex items-center justify-center bg-gray-700 text-white px-2 py-1 rounded mr-1 w-16  " onClick={handlePreviousPage}>Previous</button>
+                                <span id="pagination_container" ></span>
+                                <button className="flex items-center justify-center bg-gray-700 text-white px-2 py-1 rounded ml-2 mr-2 w-16" onClick={handleNextPage}>Next</button>
+                            </div>
+                        </div>
+                       
                     </div>         
                 </main>
             </div>
