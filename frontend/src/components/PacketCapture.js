@@ -157,7 +157,7 @@ const PacketCapture = () => {
     <div className="flex bg-gray-900 text-white min-h-screen">
       <Sidebar isNavOpen={isNavOpen} />
       <div className="flex-grow flex flex-col w-4/5">
-        <Headerbar toggleNav={toggleNav} />
+        <Headerbar toggleNav={toggleNav} headerContent={"Packet Capture"}/>
         <main className="p-6 flex-grow flex max-h-screen space-x-4">
           <div className="w-1/2 flex flex-col space-y-4 max-h-screen overflow-y-auto">
             <div className="bg-gray-800 p-4 rounded-lg space-y-4">

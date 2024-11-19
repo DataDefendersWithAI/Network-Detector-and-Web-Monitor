@@ -61,7 +61,7 @@ const TrafficAnalysis = () => {
     <div className="flex bg-gray-900 text-white min-h-screen">
       <Sidebar isNavOpen={isNavOpen} />
       <div className="rounded-lg shadow-lg flex-grow space-y-6">
-        <Headerbar toggleNav={toggleNav} />
+        <Headerbar toggleNav={toggleNav} headerContent={"Traffic Analysis"}/>
         <div className="bg-gray-800 p-4 rounded-lg space-y-6 max-w-md m-auto">
           <h1 className="text-2xl font-bold text-center">
             PCAP File Analysis 🦈
