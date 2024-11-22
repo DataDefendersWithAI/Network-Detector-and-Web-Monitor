@@ -21,14 +21,15 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/', DeviceListView.as_view(), name='device-list'),
+    path('', DeviceListView.as_view(), name='device-list'),
     path('api/devices/', DeviceListView.as_view(), name='device-list'),
     path('api/devices/<str:mac>/', DeviceDetailView.as_view(), name='device-detail'),
     path('api/web-monitor/', views.WebsiteMonitorView.as_view(), name='website-monitor'),
     path('api/speedtest/', views.SpeedTestView.as_view(), name='speed-test'),
     path('api/add-website/', views.AddWebsiteView.as_view(), name='add-website'),
-    path('api/view-pcap/', views.PcapOpenView.as_view(), name='view-pcap'),
+    path('api/see-packets/', views.PcapOpenView.as_view(), name='see-packets'),
     path('api/capture-packets/', views.PcapCaptureView.as_view(), name='capture-packets'),
     path('api/interfaces/', views.NetworkInterfacesView.as_view(), name='interfaces'),
-    path('api/pcap-analysis/', views.PcapAnalysisView.as_view(), name='pcap-analysis')
+    path('', include('icmp_monitoring.urls')),
+    path('', include('ip_scanning.urls'))
 ]
