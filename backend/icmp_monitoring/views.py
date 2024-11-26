@@ -52,7 +52,6 @@ def icmp_scan(ip):
 class ICMPScan(APIView):
     permission_classes = (AllowAny,)
     def post(self, request):
-        print(request)
         ip = request.data.get('ip')
         if ip is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -66,7 +65,10 @@ class ICMPList(APIView):
     permission_classes = (AllowAny,)
     def get(self, request):
         ip = ICMPdatabase.objects.all()
-        serializer = ICMPdatabaseSerializer(ip, many=True)
+        for i in ip:
+            icmp_scan(i.ip_address)
+        new_ip = ICMPdatabase.objects.all()
+        serializer = ICMPdatabaseSerializer(new_ip, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ICMPDetail(APIView):
@@ -77,6 +79,7 @@ class ICMPDetail(APIView):
             ip = ICMPdatabase.objects.get(id=pk)
         except ICMPdatabase.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        icmp_scan(ip.ip_address)
         serializer = ICMPdatabaseSerializer(ip)
         return Response(serializer.data)
     def post(self, request, pk):
