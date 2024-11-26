@@ -30,5 +30,7 @@ urlpatterns = [
     path('api/view-pcap/', views.PcapOpenView.as_view(), name='view-pcap'),
     path('api/capture-packets/', views.PcapCaptureView.as_view(), name='capture-packets'),
     path('api/interfaces/', views.NetworkInterfacesView.as_view(), name='interfaces'),
-    path('api/pcap-analysis/', views.PcapAnalysisView.as_view(), name='pcap-analysis')
+    path('api/pcap-analysis/', views.PcapAnalysisView.as_view(), name='pcap-analysis'),
+    path('', include('icmp_monitoring.urls')),
+    path('', include('ip_scanning.urls'))
 ]

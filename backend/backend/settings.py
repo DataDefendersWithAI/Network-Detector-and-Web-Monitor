@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework', # add for REST API
     'corsheaders', # add for CORS
     'django_crontab', # add for cron jobs
+    'icmp_monitoring', # add for ICMP monitoring
+    'ip_scanning', # add for IP scanning
 ]
 
 MIDDLEWARE = [
@@ -119,7 +121,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -140,4 +142,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 CRONJOBS = [
     ('*/5 * * * *', 'backend.cron.run_speed_test'),
     ('*/5 * * * *', 'backend.cron.run_website_monitor'),
+    ('*/3 * * * *', 'ip_scanning.cron.nmap_scan'),
+    ('*/5 * * * *', 'ip_scanning.cron.scan_ip'),
 ]
