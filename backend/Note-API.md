@@ -204,7 +204,7 @@ Status Code: 200
 
 Status code: 200 
 
-**Endpoint:** `/api/ip/{id}`
+**Endpoint:** `/api/icmp_detail/{id}`
 
 **Method:** `POST`
 
@@ -228,7 +228,7 @@ Status code: 200
 Status code: 200
 
 
-**Endpoint:** `/api/ip/{id}`
+**Endpoint:** `/api/icmp_detail/{id}`
 
 **Method:** `DELETE`
 
