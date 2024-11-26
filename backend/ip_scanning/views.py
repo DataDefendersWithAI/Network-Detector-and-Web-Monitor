@@ -12,6 +12,7 @@ from datetime import datetime
 class IPList(APIView):
     permission_classes = (AllowAny,)
     def get(self, request):
+        nmap_scan()
         ip = IPdatabase.objects.all()
         serializer = IPdatabaseSerializer(ip, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -19,7 +20,6 @@ class IPList(APIView):
 class IPDetail(APIView):
     permission_classes = (AllowAny,)
     def get(self, request, pk):
-        
         try:
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
@@ -53,6 +53,54 @@ class CreateIP(APIView):
             serializer.save(scan_date=datetime.now())
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ChangeHost(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request):
+        new_host = request.data.get("host")
+        if new_host:
+            update_host(new_host)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+
+class FastScanIP(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, pk):
+        try:
+            ip = IPdatabase.objects.get(id=pk)
+        except IPdatabase.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        fast_scan_port_detection(ip.ip, True)
+        new_ip = IPdatabase.objects.get(id=pk)
+        ip_serializer = IPdatabaseSerializer(new_ip)
+        return Response(ip_serializer,status=status.HTTP_200_OK)
+
+class FullScanIP(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, pk):
+        try:
+            ip = IPdatabase.objects.get(id=pk)
+        except IPdatabase.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        full_scan_port_detection(ip.ip, True)
+        new_ip = IPdatabase.objects.get(id=pk)
+        ip_serializer = IPdatabaseSerializer(new_ip)
+        return Response(ip_serializer,status=status.HTTP_200_OK)
+
+class DefaultScanIP(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, pk):
+        try:
+            ip = IPdatabase.objects.get(id=pk)
+        except IPdatabase.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        port_detection(ip.ip, True)
+        new_ip = IPdatabase.objects.get(id=pk)
+        ip_serializer = IPdatabaseSerializer(new_ip)
+        return Response(ip_serializer,status=status.HTTP_200_OK)
+
 
 
 

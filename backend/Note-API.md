@@ -120,6 +120,103 @@ Status code: 200
 
 Status code: 204 
 
+### 4. Thay đổi dãy địa chỉ IP cần quét
+
+**Endpoint:** `/api/ip/changehost`
+
+**Method:** `POST`
+
+
+**Request:** 
+
+```
+{
+    host: "string of network range (for example: "192.168.1.0/24")"
+}
+```
+
+**Response:** 
+
+Status code: 200
+
+### 5. Thực hiện default scan (scan 1000 port nổi tiếng) với IP chỉ định
+
+**Endpoint:** `/api/ip/{id}/defaultscan`
+
+**Method:** `POST`
+
+
+**Request:** 
+
+
+**Response:** 
+
+```
+{
+    "id": "int",
+    "ip_address": "string (ip address)",
+    "mac_address": "string (mac address)",
+    "vendor": "string (or unknown)",
+    "device": "string (or unknown)",
+    "os": "string (or unknown)",
+    "open_ports": "string of ports (or No open ports)",
+    "scan_date": "string of date",
+    "is_active": "boolean (true or false)"
+}
+```
+
+### 6. Thực hiện fast scan (scan 100 port nổi tiếng) với IP chỉ định
+
+**Endpoint:** `/api/ip/{id}/fastscan`
+
+**Method:** `POST`
+
+
+**Request:** 
+
+
+**Response:** 
+
+```
+{
+    "id": "int",
+    "ip_address": "string (ip address)",
+    "mac_address": "string (mac address)",
+    "vendor": "string (or unknown)",
+    "device": "string (or unknown)",
+    "os": "string (or unknown)",
+    "open_ports": "string of ports (or No open ports)",
+    "scan_date": "string of date",
+    "is_active": "boolean (true or false)"
+}
+```
+
+### 6. Thực hiện full scan (scan toàn bộ 65535 port) với IP chỉ định
+
+**Endpoint:** `/api/ip/{id}/fullscan`
+
+**Method:** `POST`
+
+
+**Request:** 
+
+
+**Response:** 
+
+```
+{
+    "id": "int",
+    "ip_address": "string (ip address)",
+    "mac_address": "string (mac address)",
+    "vendor": "string (or unknown)",
+    "device": "string (or unknown)",
+    "os": "string (or unknown)",
+    "open_ports": "string of ports (or No open ports)",
+    "scan_date": "string of date",
+    "is_active": "boolean (true or false)"
+}
+```
+
 ## Chức năng ICMP Monitoring:
 
 ### 1. Tiến hành ping IP được chỉ định và lưu vào database

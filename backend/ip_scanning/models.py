@@ -9,4 +9,8 @@ class IPdatabase(models.Model):
     open_ports = models.CharField(max_length=100)
     scan_date = models.DateTimeField(null=True)
     is_active = models.BooleanField(default=False)
+
+class HostDatabase(models.Model):
+    host = models.CharField(max_length=50)
+    
     
