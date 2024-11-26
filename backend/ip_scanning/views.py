@@ -72,10 +72,10 @@ class FastScanIP(APIView):
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        fast_scan_port_detection(ip.ip, True)
+        fast_scan_port_detection(ip.ip_address, True)
         new_ip = IPdatabase.objects.get(id=pk)
         ip_serializer = IPdatabaseSerializer(new_ip)
-        return Response(ip_serializer,status=status.HTTP_200_OK)
+        return Response(ip_serializer.data,status=status.HTTP_200_OK)
 
 class FullScanIP(APIView):
     permission_classes = (AllowAny,)
@@ -84,10 +84,10 @@ class FullScanIP(APIView):
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        full_scan_port_detection(ip.ip, True)
+        full_scan_port_detection(ip.ip_address, True)
         new_ip = IPdatabase.objects.get(id=pk)
         ip_serializer = IPdatabaseSerializer(new_ip)
-        return Response(ip_serializer,status=status.HTTP_200_OK)
+        return Response(ip_serializer.data,status=status.HTTP_200_OK)
 
 class DefaultScanIP(APIView):
     permission_classes = (AllowAny,)
@@ -96,10 +96,10 @@ class DefaultScanIP(APIView):
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        port_detection(ip.ip, True)
+        port_detection(ip.ip_address, True)
         new_ip = IPdatabase.objects.get(id=pk)
         ip_serializer = IPdatabaseSerializer(new_ip)
-        return Response(ip_serializer,status=status.HTTP_200_OK)
+        return Response(ip_serializer.data,status=status.HTTP_200_OK)
 
 
 
