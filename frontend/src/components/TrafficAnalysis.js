@@ -7,6 +7,7 @@ import Sidebar from "./Sidebar";
 const TrafficAnalysis = () => {
   const [alertColor, setAlertColor] = useState("");
   const [isNavOpen, setIsNavOpen] = useState(true);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [debug, setDebug] = useState(false);
   const [filter, setFilter] = useState("");
@@ -18,12 +19,16 @@ const TrafficAnalysis = () => {
   };
 
   const handleSubmit = async (e) => {
+    if (isAnalyzing) return;  // Prevent multiple requests
+    setIsAnalyzing(true);
     e.preventDefault();
     if (!file) {
       setAlertText("Please select a file to upload.");
       return;
     }
 
+    setAlertText("Analyzing file...");
+    setAlertColor("text-yellow-500");
     const formData = new FormData();
     formData.append("pcap_file", file);
     formData.append("filter", filter);
@@ -34,13 +39,21 @@ const TrafficAnalysis = () => {
         "http://localhost:3060/api/pcap-analysis/",
         formData
       );
-      console.log(response.data);
+      if (response.data.error) {
+        setAlertText(response.data.error);
+        setAlertColor("text-red-500");
+        setIsAnalyzing(false);
+        return;
+      }
+      // console.log(response.data);
       setGraphs(response.data.graphs);
       setAlertText(response.data.alert_text);
       setAlertColor(response.data.alert_color);
+      setIsAnalyzing(false);
     } catch (err) {
       console.error(err);
       setAlertText("Error analyzing the file. Please try again.");
+      setAlertColor("text-red-500");
     }
   };
 
@@ -48,7 +61,7 @@ const TrafficAnalysis = () => {
     <div className="flex bg-gray-900 text-white min-h-screen">
       <Sidebar isNavOpen={isNavOpen} />
       <div className="rounded-lg shadow-lg flex-grow space-y-6">
-        <Headerbar toggleNav={toggleNav} />
+        <Headerbar toggleNav={toggleNav} headerContent={"Traffic Analysis"}/>
         <div className="bg-gray-800 p-4 rounded-lg space-y-6 max-w-md m-auto">
           <h1 className="text-2xl font-bold text-center">
             PCAP File Analysis 🦈
@@ -98,7 +111,8 @@ const TrafficAnalysis = () => {
 
             <button
               type="submit"
-              className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className={`w-full p-2 rounded text-white ${isAnalyzing ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
+              disabled={isAnalyzing}
             >
               Analyze File
             </button>
@@ -112,26 +126,30 @@ const TrafficAnalysis = () => {
         )}
 
         {graphs.graph1 || graphs.graph2 || graphs.graph3 || graphs.graph4 ? (
-          <div className="space-y-4 m-auto max-w-screen-xl px-20 pb-20">
+          <div className="space-y-4 m-auto max-w-[1220px] px-20 pb-20">
             <div className="flex space-x-4">
               {graphs.graph1 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Identified Attacks 🚨​​</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph1}`}
-                    alt="Graph 1"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph1}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph1}`}
+                      alt="Graph 1"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
               {graphs.graph2 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Protocols 🔎</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph2}`}
-                    alt="Graph 2"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph2}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph2}`}
+                      alt="Graph 2"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
             </div>
@@ -139,21 +157,25 @@ const TrafficAnalysis = () => {
               {graphs.graph3 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">Network Endpoints 🌐</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph3}`}
-                    alt="Graph 3"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph3}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph3}`}
+                      alt="Graph 3"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
               {graphs.graph4 && (
                 <div className="w-1/2">
                   <h2 className="text-2xl font-bold text-center pb-2">TCP Ports 🛜</h2>
-                  <img
-                    src={`data:image/png;base64,${graphs.graph4}`}
-                    alt="Graph 4"
-                    className="w-full rounded-lg"
-                  />
+                  <a href={`data:image/png;base64,${graphs.graph4}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`data:image/png;base64,${graphs.graph4}`}
+                      alt="Graph 4"
+                      className="w-full rounded-lg"
+                    />
+                  </a>
                 </div>
               )}
             </div>

@@ -1,16 +1,18 @@
-# Use an official Python image to build and run the Django app
-FROM python:3.11-slim
+# Use an official CUDA image to build and run the Django app
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Install Python and other dependencies
+RUN apt update && apt install -y python3 python3-pip python-is-python3 libpcap0.8-dev tcpdump iproute2
+
 # Install Django
-RUN pip install django
-RUN apt update && apt install libpcap0.8-dev -y && apt install tcpdump -y && apt install iproute2 -y
+RUN pip3 install django
 
 # Install additional Python dependencies (if you have a requirements.txt)
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt || true
+RUN pip3 install --no-cache-dir -r requirements.txt || true
 
 # Copy the rest of the application code
 COPY . .
@@ -19,4 +21,4 @@ COPY . .
 EXPOSE 3060
 
 # Command to run the Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:3060"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:3060"]
