@@ -205,10 +205,10 @@ class TrafficAnalysis:
                                     print("Class probabilities:", probabilities.tolist())
 
     def generate_graph(self, data, title, graph_color, xtext, ytext):
+        plt.figure(figsize=(12, 8))  # Increase the figure size for better visibility
         plt.bar(data.keys(), data.values(), color=graph_color, width=0.7)
-        # plt.ylim(0, 50)
         plt.xlabel(xtext, weight='bold')
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=15, ha='right')
         plt.ylabel(ytext, weight='bold')
         plt.title(title)
 
@@ -235,9 +235,9 @@ class TrafficAnalysis:
     def visualize_network_graph(self):
         network_graph = self.create_network_graph()
 
+        plt.figure(figsize=(12, 8))  # Set the figure size to 12:8 ratio
         pos = nx.spring_layout(network_graph)
         nx.draw(network_graph, pos, with_labels=True, font_size=8, node_size=1000, node_color='skyblue', font_color='black', font_weight='bold')
-        #plt.show()
 
         img_bytes = BytesIO()
         plt.savefig(img_bytes, format='png')
@@ -260,7 +260,7 @@ class TrafficAnalysis:
                 destination_ports[(dst_ip, dst_port)] = destination_ports.get((dst_ip, dst_port), 0) + 1
         sorted_ports = sorted(destination_ports.items(), key=lambda x: x[1], reverse=True)
 
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(12, 8))
 
         top_ports = sorted_ports[:top_n]
 
@@ -288,7 +288,6 @@ class TrafficAnalysis:
         try:
             self.packets_brief.clear()
 
-            print("FILTER VALUE : ", self.filter)
             if len(self.filter) > 0:
                 self.predictingRowsCategoryOnGPU(self.file_path, self.filter.encode('utf-8'), False) # Will take care of saving data in packets_brief
             else:
