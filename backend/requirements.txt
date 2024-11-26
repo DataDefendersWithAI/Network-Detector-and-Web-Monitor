@@ -11,6 +11,7 @@ werkzeug
 networkx
 traffic
 pandas
+getmac
 django
 torch
 scapy
