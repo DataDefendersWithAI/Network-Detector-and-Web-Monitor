@@ -8,7 +8,7 @@ const Events = ({ onEventClick }) => {
     const [isNavOpen, setIsNavOpen] = useState(true);
     const [selectedValue, setSelectedValue] = useState(10);
     const [currebtPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 1; 
+    const ITEMS_PER_PAGE = 5; 
     const [selectedItem, setSelectedItem] = useState('name');
     const [searchQuery, setSearchQuery] = useState('');
     const [events, setEvents] = useState([

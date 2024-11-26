@@ -1,1 +1,16 @@
 scapy
+django-cors-headers
+django
+django-rest-framework
+django-crontab
+requests
+speedtest-cli
+traffic
+python-nmap
+colorama
+transformers
+torch
+werkzeug
+pandas
+matplotlib
+networkx

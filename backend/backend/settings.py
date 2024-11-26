@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'backend',
     'rest_framework', # add for REST API
     'corsheaders', # add for CORS
+    'django_crontab', # add for cron jobs
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware', # add for CORS
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3060",
+    "http://localhost:3000"
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -128,3 +134,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# CRON
+CRONJOBS = [
+    ('*/5 * * * *', 'backend.cron.run_speed_test'),
+    ('*/5 * * * *', 'backend.cron.run_website_monitor'),
+]
