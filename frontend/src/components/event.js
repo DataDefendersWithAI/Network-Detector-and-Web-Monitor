@@ -28,7 +28,7 @@ const Events = ({ onEventClick }) => {
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
         { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
+        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2023-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
     ]);
 
     
@@ -101,16 +101,36 @@ const Events = ({ onEventClick }) => {
         }
         // [selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase()) dùng để query theo thứ đã chọn trong input search 
         else {
-            if(!selectedItem)   return Object.values(event).some(value =>
-                typeof value === "string" && value.toLowerCase().includes(searchQuery.toLowerCase()));
+            if(!selectedItem)   
+                return Object.values(event).some(value =>{ 
+                    if (value === null || value === undefined) {
+                        return false;
+                       
+                    }
+                const stringValue = value.toString().toLowerCase();
+                return stringValue.includes(searchQuery.toLowerCase());
+                }); 
             else {
+                
                 if (!activeFilters) return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
                 switch (activeFilters) {
                     // - Filter by event type and status (ask for more case if you need)
-                    case 'connected': return event.connected[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase()); 
-                    case 'new': return (event.Status === 'new')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
-                    case 'down-alerts': return (event.Status === 'offline')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
-                    default: return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    case 'connected': 
+                    {
+                        return event.connected[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    } 
+                    case 'new': 
+                    {
+                        return (event.Status === 'new')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    }
+                    case 'down-alerts': 
+                    {
+                        return (event.Status === 'offline')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    }
+                    default: 
+                    {
+                        return event[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                    }
             }
            
         }
@@ -156,14 +176,7 @@ const Events = ({ onEventClick }) => {
           <Icon size={24} />
         </button>
     );
-    const getStatusStyle = (status) => {
-        switch (status) {
-          case 'new': return 'bg-green-500 text-white';
-          case 'online': return 'bg-blue-500 text-white';
-          case 'offline': return 'bg-red-500 text-white';
-          default: return 'bg-gray-500 text-white';
-        }
-    };
+   
     const handleInputChange = (e) => {
          const query = e.target.value;
          setSearchQuery(query);
@@ -344,7 +357,7 @@ const Events = ({ onEventClick }) => {
             else 
             {
                 for(let i = currebtPage; i <= currebtPage + 5; i++) {
-                    if ( i!= currebtPage +2 )
+                    if ( i!== currebtPage +2 )
                     {
                         pages.push(
                             <button

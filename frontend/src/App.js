@@ -5,7 +5,8 @@ import DeviceDetails from './components/DeviceDetails';
 import WebServicesMonitor from './components/WebServicesMonitor';
 import PacketCapture from './components/PacketCapture';
 import TrafficAnalysis from './components/TrafficAnalysis';
-
+import Event from './components/event';
+import ICMP from './components/ICMP';
 const App = () => {
   return (
     <Router>
@@ -15,6 +16,8 @@ const App = () => {
         <Route path="/web-services" element={<WebServicesMonitor />} />
         <Route path="/package-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
+        <Route path ="/ICMP" element={<ICMP />} />
+        <Route path="/event" element={<Event />} />
       </Routes>
     </Router>
   );
