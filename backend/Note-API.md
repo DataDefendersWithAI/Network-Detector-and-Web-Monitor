@@ -334,3 +334,93 @@ Status code: 200
 **Response:** 
 
 Status code: 204
+
+### 4. Theo dõi tốc độ Internet
+
+#### 4.1. Đo tốc độ Internet
+
+**Endpoint:** `/api/speedtest/`
+
+**Method:** `GET`
+
+**Request:**
+
+**Response:**
+
+```
+{
+    "download_speed": "float",
+    "upload_speed": "float",
+    "ping": "float"
+}
+```
+
+Status code: 200
+
+**Method:** `DELETE`
+
+**Request:**
+
+```
+{
+    "date": "string of date as format: YYYY-MM-DDTHH:MM:SS.sssZ"
+}
+```
+
+**Response:**
+
+Status code: 204
+
+#### 4.2. Liệt kê các kết quả đo tốc độ Internet
+
+**Endpoint:** `/api/speedtest-history/`
+
+**Method:** `GET`
+
+**Request:**
+
+```
+{
+    "action": "string, 1 of 3 values: brief, partial, all",
+    "page": "int",
+    "entries": "int"
+}
+```
+
+** Response:**
+
+```
+{
+    "from": "int", # if action is partial
+    "to": "int", # if action is partial
+    "results": [
+        {
+            "download_speed": "float",
+            "upload_speed": "float",
+            "ping": "float",
+            "created_at": "string of date as format: YYYY-MM-DDTHH:MM:SS.sssZ"
+        },
+        ...
+    ], # if action is all, this will be a list of all results, so no key "results" here
+    # if action is brief
+    "max_download_speed": "float", 
+    "min_download_speed": "float",
+    "avg_download_speed": "float",
+    "max_upload_speed": "float",
+    "min_upload_speed": "float",
+    "avg_upload_speed": "float",
+    "max_ping": "float",
+    "min_ping": "float",
+    "avg_ping": "float"
+}
+```
+
+Status code: 200
+
+### 5. Theo dõi tình trạng Web Service
+
+#### 5.1. Thêm một Web Service mới
+
+**Endpoint:** `/api/web-monitor/add`
+
+...

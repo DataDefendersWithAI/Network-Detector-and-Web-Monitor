@@ -8,34 +8,3 @@ class Device(models.Model):
     
     def __str__(self):
         return self.name
-# Website model
-class Website(models.Model):
-    url = models.URLField(max_length=200, primary_key=True)
-    tag = models.CharField(max_length=100, default='Default')
-    monitor_all_events = models.BooleanField(default=False)
-    monitor_down_events = models.BooleanField(default=False)
-    dest_ip = models.GenericIPAddressField(null=True, blank=True) # Destination IP address, default is None
-    
-    def __str__(self):
-        return self.tag
-    
-# Website List of monitored results
-class WebsiteResult(models.Model):
-    website = models.ForeignKey(Website, on_delete=models.CASCADE, to_field='url')
-    status_code = models.IntegerField()
-    latency = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    note = models.CharField(max_length=100, blank=True)
-    
-    def __str__(self):
-        return self.website.tag
-    
-# Speed Test model
-class SpeedTest(models.Model):
-    download_speed = models.FloatField()
-    upload_speed = models.FloatField()
-    ping = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f'{self.download_speed} Mbps / {self.upload_speed} Mbps / {self.ping} ms'
