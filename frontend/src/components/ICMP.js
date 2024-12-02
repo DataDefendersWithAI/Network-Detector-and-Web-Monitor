@@ -6,21 +6,20 @@ import Headerbar from './Headerbar';
 import axios from "axios";
 
 const ICMP = ({ onEventClick}) => {
-    const [scan, setscan]  = useState([]);
+    const [scan, setscan]  = useState([
+        
+    ]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchICMPData = async () => {
+    const fetchICMPData = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/icmp-list/');
+            const response = await axios.get('http://localhost:3060/api/icmp_list/');
             setscan(response.data); // Cập nhật state với dữ liệu JSON từ API
         } catch (error) {
             console.error('Error fetching data:', error);
-        } finally {
-            setLoading(false);
-        }
+        } 
         };
 
+    useEffect(() => {
         fetchICMPData();
     }, []);
 
@@ -262,9 +261,13 @@ const ICMP = ({ onEventClick}) => {
                     <Headerbar toggleNav={toggleNav} />
                     <main className="p-6">
                         <div className="bg-gray-800 rounded-lg p-4">
-                            <div className="grid grid-cols-2 gap-2 justify-between mb-4">
-                            <h2 className="text-xl font-bold">Monitoring </h2>
-                            <input type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2"value={searchQuery} onChange={handleInputChange}/>
+                            <div className=" mb-4">
+                            <h2 className="text-xl font-bold mb-4">Monitoring </h2>
+                            <div className='flex items-center '>
+                                <h2 className='mr-3'>search :</h2>
+                                <input type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2"value={searchQuery} onChange={handleInputChange}/>
+                            </div>
+                            
                             </div>
                             <table className="w-full">
                                 <thead>
@@ -272,8 +275,9 @@ const ICMP = ({ onEventClick}) => {
                                         <th className="text-left">Ip_address<SortButton column="ip_address" /></th>
                                         <th className="text-left">Scan_date<SortButton column="scan_date" /></th>
                                         <th className="text-left">Status<SortButton column="is_active" /></th>
-                                        <th className="text-left">Max_rtt<SortButton column="max_rtt" /></th>
+                                       
                                         <th className="text-left">Min_rtt<SortButton column="min_rtt" /></th>
+                                        <th className="text-left">Max_rtt<SortButton column="max_rtt" /></th>
                                         <th className="text-left">Avg_rtt<SortButton column="avg_rtt" /></th>
                                     </tr>
                                 </thead>

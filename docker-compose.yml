@@ -15,7 +15,7 @@ services:
   backend:
     build: ./backend
     container_name: django_backend
-    command: python manage.py runserver 0.0.0.0:3060
+    #command: python manage.py runserver 0.0.0.0:3060
     volumes:
       - ./backend:/usr/src/app
     ports:
@@ -43,7 +43,7 @@ services:
       - ./frontend:/app
     ports:
       - "3000:3000"
-    command: npm start
+    #command: npm start
 
   # nginx:
   #   image: nginx:latest

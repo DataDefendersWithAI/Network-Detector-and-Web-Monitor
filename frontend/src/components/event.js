@@ -105,7 +105,6 @@ const Events = ({ onEventClick }) => {
                 return Object.values(event).some(value =>{ 
                     if (value === null || value === undefined) {
                         return false;
-                       
                     }
                 const stringValue = value.toString().toLowerCase();
                 return stringValue.includes(searchQuery.toLowerCase());
