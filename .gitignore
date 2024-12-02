@@ -192,3 +192,6 @@ backend/**/migrations/*.py
 # pcap files
 **/*.pcap
 
+# uv files
+uv.lock
+.python-version
