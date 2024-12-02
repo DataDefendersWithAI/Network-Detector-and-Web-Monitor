@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django_crontab', # add for cron jobs
     'icmp_monitoring', # add for ICMP monitoring
     'ip_scanning', # add for IP scanning
+    'speedtest_mon', # add for speed test monitoring
+    'web_service_mon', # add for website monitoring
 ]
 
 MIDDLEWARE = [
@@ -117,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Ho_Chi_Minh"
 
 USE_I18N = True
 
@@ -140,7 +142,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # CRON
 CRONJOBS = [
-    ('*/5 * * * *', 'backend.cron.run_speed_test'),
+    ('*/5 * * * *', 'speedtest_mon.cron.run_speed_test'),
     ('*/5 * * * *', 'backend.cron.run_website_monitor'),
     ('*/3 * * * *', 'ip_scanning.cron.nmap_scan'),
 ]
