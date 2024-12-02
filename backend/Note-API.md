@@ -25,6 +25,17 @@
         "open_ports": "string of ports (or No open ports)",
         "scan_date": "string of date",
         "is_active": "boolean (true or false)"
+        "events": [
+            {
+                "id": "int",
+                "event": "int",
+                "ip_address": "string (ip address)",
+                "event_date": "string of date",
+                "is_active": "boolean (true or false)",
+                "additional_info": "string"
+            },
+            ...
+        ]
     }
 
     ...
@@ -78,6 +89,17 @@ Status Code: 201
     "open_ports": "string of ports (or No open ports)",
     "scan_date": "string of date",
     "is_active": "boolean (true or false)"
+    "events": [
+    {
+        "id": "int",
+        "event": "int",
+        "ip_address": "string (ip address)",
+        "event_date": "string of date",
+        "is_active": "boolean (true or false)",
+        "additional_info": "string"
+    },
+    ...
+    ]
 }
 
 ```
@@ -143,7 +165,7 @@ Status code: 200
 
 **Endpoint:** `/api/ip/{id}/defaultscan`
 
-**Method:** `POST`
+**Method:** `GET`
 
 
 **Request:** 
@@ -162,6 +184,17 @@ Status code: 200
     "open_ports": "string of ports (or No open ports)",
     "scan_date": "string of date",
     "is_active": "boolean (true or false)"
+    "events": [
+    {
+        "id": "int",
+        "event": "int",
+        "ip_address": "string (ip address)",
+        "event_date": "string of date",
+        "is_active": "boolean (true or false)",
+        "additional_info": "string"
+    },
+    ...
+    ]
 }
 ```
 
@@ -169,7 +202,7 @@ Status code: 200
 
 **Endpoint:** `/api/ip/{id}/fastscan`
 
-**Method:** `POST`
+**Method:** `GET`
 
 
 **Request:** 
@@ -188,14 +221,25 @@ Status code: 200
     "open_ports": "string of ports (or No open ports)",
     "scan_date": "string of date",
     "is_active": "boolean (true or false)"
+    "events": [
+    {
+        "id": "int",
+        "event": "int",
+        "ip_address": "string (ip address)",
+        "event_date": "string of date",
+        "is_active": "boolean (true or false)",
+        "additional_info": "string"
+    },
+    ...
+    ]
 }
 ```
 
-### 6. Thực hiện full scan (scan toàn bộ 65535 port) với IP chỉ định
+### 7. Thực hiện full scan (scan toàn bộ 65535 port) với IP chỉ định
 
 **Endpoint:** `/api/ip/{id}/fullscan`
 
-**Method:** `POST`
+**Method:** `GET`
 
 
 **Request:** 
@@ -214,8 +258,48 @@ Status code: 200
     "open_ports": "string of ports (or No open ports)",
     "scan_date": "string of date",
     "is_active": "boolean (true or false)"
+    "events": [
+    {
+        "id": "int",
+        "event": "int",
+        "ip_address": "string (ip address)",
+        "event_date": "string of date",
+        "is_active": "boolean (true or false)",
+        "additional_info": "string"
+    },
+    ...
+    ]
 }
 ```
+
+### 8. Lấy toàn bộ events đối với IP chỉ định trong database
+
+**Endpoint:** `/api/ip/{id}/events`
+
+**Method:** `GET`
+
+
+**Request:** 
+
+
+**Response:** 
+
+```
+[
+    {
+        "id": "int",
+        "event": "int",
+        "ip_address": "string (ip address)",
+        "event_date": "string of date",
+        "is_active": "boolean (true or false)",
+        "additional_info": "string"
+    },
+    ...
+]
+
+```
+
+
 
 ## Chức năng ICMP Monitoring:
 

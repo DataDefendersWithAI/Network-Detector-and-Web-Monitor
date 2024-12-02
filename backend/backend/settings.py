@@ -143,5 +143,4 @@ CRONJOBS = [
     ('*/5 * * * *', 'backend.cron.run_speed_test'),
     ('*/5 * * * *', 'backend.cron.run_website_monitor'),
     ('*/3 * * * *', 'ip_scanning.cron.nmap_scan'),
-    ('*/5 * * * *', 'ip_scanning.cron.scan_ip'),
 ]
