@@ -20,13 +20,13 @@ const TrafficAnalysis = () => {
 
   const handleSubmit = async (e) => {
     if (isAnalyzing) return;  // Prevent multiple requests
-    setIsAnalyzing(true);
     e.preventDefault();
     if (!file) {
       setAlertText("Please select a file to upload.");
       return;
     }
-
+    
+    setIsAnalyzing(true);
     setAlertText("Analyzing file...");
     setAlertColor("text-yellow-500");
     const formData = new FormData();
