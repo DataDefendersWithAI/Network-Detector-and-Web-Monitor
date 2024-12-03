@@ -1,6 +1,6 @@
 from scapy.all import *
 from scapy.all import srp, Ether, ARP
-from .models import IPdatabase, HostDatabase
+from .models import IPdatabase, HostDatabase, IPEvent
 import requests
 import datetime
 from scapy.layers.inet import IP, ICMP
@@ -169,6 +169,28 @@ def real_time_scan(ip, mac, url_vendor):
         if device_info.open_ports == "No open ports":
             device_info.open_ports = port_detection(device_info.ip_address)
         device_info.scan_date = datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
+        if device_info.ip_address != ip:
+            device_info.events.create(
+                ip_address=device_info.ip_address,
+                event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                is_active=True,
+                additional_info=f"IP changed from {device_info.ip_address} to {ip}"
+            )
+            device_info.ip_address = ip
+        if device_info.is_active == False:
+            device_info.events.create(
+                ip_address=device_info.ip_address,
+                event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                is_active=True,
+                additional_info="Device is reconnected to the network"
+            )
+        else:
+            device_info.events.create(
+                ip_address=device_info.ip_address,
+                event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                is_active=True,
+                additional_info="Device is still connected to the network"
+            )
         device_info.is_active = True
         device_info.save()
     else:
@@ -185,6 +207,12 @@ def real_time_scan(ip, mac, url_vendor):
         device_info.os = os_detection(device_info.ip_address)
         device_info.open_ports = port_detection(device_info.ip_address)
         device_info.is_active = True
+        device_info.events.create(
+            ip_address=device_info.ip_address,
+            event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+            is_active=True,
+            additional_info="New device is connected to the network"
+        )
         device_info.save()
     
 
@@ -195,7 +223,7 @@ def nmap_scan():
     else:
         new_host = new_host.host
     nm = nmap.PortScanner()
-    result = nm.scan(hosts=new_host, arguments="-sn")
+    result = nm.scan(hosts=new_host, arguments="-sn -T4 --min-rate 3000")
     connected_ip = []
     my_ip, my_mac = my_ip_and_mac()
     connected_ip.append(my_ip)
@@ -208,6 +236,20 @@ def nmap_scan():
     for ip in IPdatabase.objects.all():
         if ip.ip_address not in connected_ip:
             print(ip.ip_address)
+            if ip.is_active == True:
+                ip.events.create(
+                    ip_address=ip.ip_address,
+                    event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                    is_active=False,
+                    additional_info="Device is disconnected from the network"
+                )
+            else:
+                ip.events.create(
+                    ip_address=ip.ip_address,
+                    event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                    is_active=False,
+                    additional_info="Device is still disconnected from the network"
+                )
             ip.is_active = False
             ip.scan_date = datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
             ip.save()
@@ -221,23 +263,23 @@ def update_host(new_host):
         host.host = new_host
         host.save()
 
-def scan_ip():
-    new_host = HostDatabase.objects.first()
-    if new_host == None:
-        new_host = "192.168.1.0/24"
-    else:
-        new_host = new_host.host
-    arp_request = ARP(pdst=new_host)
-    broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
-    arp_request_broadcast = broadcast / arp_request
-    # send and recieve the ARP requests 
-    answered_list = srp(arp_request_broadcast, timeout=3, verbose=False)[0]
-    # and then extract device information from responses
-    connected_ip = []
-    url_vendor = "https://api.macvendors.com/"
-    my_ip, my_mac = my_ip_and_mac()
-    connected_ip.append(my_ip)
-    real_time_scan(my_ip, my_mac, url_vendor=url_vendor)
-    for element in answered_list:
-        connected_ip.append(element[1].psrc)
-        real_time_scan(element[1].psrc, element[1].hwsrc, url_vendor= url_vendor)
+# def scan_ip():
+#     new_host = HostDatabase.objects.first()
+#     if new_host == None:
+#         new_host = "192.168.1.0/24"
+#     else:
+#         new_host = new_host.host
+#     arp_request = ARP(pdst=new_host)
+#     broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
+#     arp_request_broadcast = broadcast / arp_request
+#     # send and recieve the ARP requests 
+#     answered_list = srp(arp_request_broadcast, timeout=3, verbose=False)[0]
+#     # and then extract device information from responses
+#     connected_ip = []
+#     url_vendor = "https://api.macvendors.com/"
+#     my_ip, my_mac = my_ip_and_mac()
+#     connected_ip.append(my_ip)
+#     real_time_scan(my_ip, my_mac, url_vendor=url_vendor)
+#     for element in answered_list:
+#         connected_ip.append(element[1].psrc)
+#         real_time_scan(element[1].psrc, element[1].hwsrc, url_vendor= url_vendor)
