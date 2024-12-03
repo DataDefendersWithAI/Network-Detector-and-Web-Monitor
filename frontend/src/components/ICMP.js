@@ -12,7 +12,7 @@ const ICMP = ({ onEventClick}) => {
     const [loading, setLoading] = useState(true);
     const fetchICMPData = async () => {
         try {
-            const response = await axios.get('http://localhost:3060/api/icmp_list/');
+            const response = await axios.get('http://localhost:3060/api/icmp_list');
             setscan(response.data); // Cập nhật state với dữ liệu JSON từ API
         } catch (error) {
             console.error('Error fetching data:', error);
