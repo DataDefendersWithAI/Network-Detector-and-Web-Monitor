@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import IPdatabase
 from .cron import *
-from .serializers import IPdatabaseSerializer
+from .serializers import IPdatabaseSerializer, IPEventSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -44,6 +44,16 @@ class IPDetail(APIView):
         ip.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class IPEventDetail(APIView):
+    permission_classes = (AllowAny,)
+    def get(self, request, pk):
+        try:
+            ip = IPdatabase.objects.get(id=pk)
+        except IPdatabase.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        events = ip.events.all()
+        serializers = IPEventSerializer(events, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 class CreateIP(APIView):
     permission_classes = (AllowAny,)
@@ -67,7 +77,7 @@ class ChangeHost(APIView):
 
 class FastScanIP(APIView):
     permission_classes = (AllowAny,)
-    def post(self, request, pk):
+    def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
@@ -79,7 +89,7 @@ class FastScanIP(APIView):
 
 class FullScanIP(APIView):
     permission_classes = (AllowAny,)
-    def post(self, request, pk):
+    def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
@@ -91,7 +101,7 @@ class FullScanIP(APIView):
 
 class DefaultScanIP(APIView):
     permission_classes = (AllowAny,)
-    def post(self, request, pk):
+    def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
         except IPdatabase.DoesNotExist:
