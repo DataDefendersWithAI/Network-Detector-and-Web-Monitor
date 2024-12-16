@@ -47,11 +47,12 @@ export async function handleCaptureAction(action, filter = "", networkInterface 
       if (action === "save") {
         const pcapContent = await response.arrayBuffer();
         savePcapFile(pcapContent, "capture.pcap");
-      } else if (action === "start") {
-        // console.log("Capture started");
-      } else if (action === "stop") {
-        // console.log("Capture stopped");
-      }
+      } 
+      // else if (action === "start") {
+      //   console.log("Capture started");
+      // } else if (action === "stop") {
+      //   console.log("Capture stopped");
+      // }
     } else {
       console.error(`Failed to ${action} capture`);
     }

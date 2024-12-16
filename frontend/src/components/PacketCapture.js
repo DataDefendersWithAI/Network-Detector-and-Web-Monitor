@@ -45,7 +45,6 @@ const PacketCapture = () => {
       getNetworkInterfaces(setNetworkInterfaces); // Replace with your API call to fetch interfaces
       if (!networkInterfaces.includes(networkInterface)) {
         setNetworkInterface(networkInterfaces[0] || "");
-        console.log(networkInterfaces);
       }
     } catch (error) {
       console.error("Failed to reload interfaces:", error);
