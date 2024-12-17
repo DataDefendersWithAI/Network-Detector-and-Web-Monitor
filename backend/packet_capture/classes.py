@@ -1,6 +1,6 @@
 from scapy.all import sniff, PcapWriter
-from threading import Thread
 from colorama import Fore, Style
+from threading import Thread
 from scapy.all import rdpcap
 import os
 
