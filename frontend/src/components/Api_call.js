@@ -1,7 +1,30 @@
 import { savePcapFile } from "./Utils.js";
 
+export async function handleUploadPcap(file, filter, setFilteredPacketsShow, setFilteredPacketsSummary) {
+  const formData = new FormData();
+  if (file) formData.append("pcap_file", file);
+  if (filter) formData.append("filter", filter);
+  
+  try {
+    const response = await fetch("http://localhost:3060/api/upload-pcap/", {
+      method: "POST",
+      body: formData,
+    });
 
-export async function fetchOpenPackets(
+    if (response.ok) {
+      const parsedPackets = await response.json();
+      setFilteredPacketsShow(Object.entries(parsedPackets.show).map(([, value]) => `${value}`));
+      setFilteredPacketsSummary(Object.entries(parsedPackets.summary).map(([key, value]) => `${key}: ${value}`));
+    } else {
+      console.error("Failed to upload pcap");
+    }
+  }
+  catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+export async function getViewPcap(
   file,
   filter,
   setFilteredPacketsShow,
@@ -10,7 +33,8 @@ export async function fetchOpenPackets(
   const formData = new FormData();
   if (file)
     formData.append("pcap_file", file);
-  formData.append("filter", filter);
+  if (filter)
+    formData.append("filter", filter);
 
   try {
     const response = await fetch("http://localhost:3060/api/view-pcap/", {
@@ -38,7 +62,6 @@ export async function getListCapturedPackets(setCapturedPackets) {
 
     if (response.ok) {
       const packets = await response.json().then((data) => data.packets);
-      console.log(packets);
       setCapturedPackets(packets);
       // console.log("Captured packets fetched");
     }

@@ -4,11 +4,12 @@ import Sidebar from "./Sidebar";
 import "../App.css";
 import Headerbar from "./Headerbar";
 import {
-  fetchOpenPackets,
+  getViewPcap,
   getListCapturedPackets,
   getNetworkInterfaces,
   handleDeleteCaptured,
-  handleCaptureAction
+  handleCaptureAction,
+  handleUploadPcap
 } from "./Api_call";
 
 const PacketCapture = () => {
@@ -79,7 +80,7 @@ const PacketCapture = () => {
     if (isCapturing) {
       // make the last fetch call to get the last packets
       setIsCapturing(false);
-      await fetchOpenPackets(
+      await getViewPcap(
         file,
         filter,
         setFilteredPacketsShow,
@@ -113,6 +114,12 @@ const PacketCapture = () => {
 
   const handlePacketCapturedSelectIndex = (index) => {
     setSelectedPacketCapturedIndex(index);
+    getViewPcap(
+      packetCapturedFiles[index].pcap_file,
+      packetCapturedFiles[index].filter_str,
+      setFilteredPacketsShow,
+      setFilteredPacketsSummary
+    );
   };
 
   const handleDeleteButton = async (index) => {
@@ -129,12 +136,7 @@ const PacketCapture = () => {
     const target_file = event.target.files[0];
     setFile(target_file);
 
-    fetchOpenPackets(
-      target_file,
-      filter,
-      setFilteredPacketsShow,
-      setFilteredPacketsSummary
-    );
+    handleUploadPcap(target_file, filter, setFilteredPacketsShow, setFilteredPacketsSummary);
   };
 
   const handleFilterChange = (event) => {
@@ -147,7 +149,7 @@ const PacketCapture = () => {
       setTimeout(() => setSaveMessage(""), 3000);
       return;
     } else {
-      fetchOpenPackets(
+      getViewPcap(
         file,
         filter,
         setFilteredPacketsShow,
@@ -158,7 +160,7 @@ const PacketCapture = () => {
 
   const handleUpdateButton = () => {
     if (isCapturing) {
-      fetchOpenPackets(
+      getViewPcap(
         file,
         filter,
         setFilteredPacketsShow,
@@ -320,7 +322,7 @@ const PacketCapture = () => {
                 {packetCapturedFiles.map((infos, index) => (
                   <tr
                     key={index}
-                    onClick={() => setSelectedPacketCapturedIndex(index)}
+                    onClick={() => handlePacketCapturedSelectIndex(index)}
                     className="p-2 bg-gray-700 rounded cursor-pointer hover:bg-gray-600"
                   >
                     <td className="py-2 px-4">{infos.id}</td>
