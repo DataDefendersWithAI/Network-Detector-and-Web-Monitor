@@ -102,43 +102,7 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
                             </table>
                         </div>
 
-                        {/* Speedtest Section */}
-                        <div className="rounded-lg shadow">
-                            <div className="flex justify-start items-center mb-4 *:mr-5">
-                                <h2 className="text-xl font-semibold">Speedtest</h2>
-                                <button className="bg-blue-500 text-white rounded-full p-1 px-3" onClick={handleSpeedTest} disabled={isRunning}>
-                                    <Plus className="w-5 h-5" />
-                                </button>
-                                {isRunning && <span className="ml-2 text-gray-500">Running...</span>}
-                            </div>
-                            <table className="min-w-full text-left">
-                            <thead className="w-full">
-                                <tr>
-                                <th className="py-2 px-4 ">Tested Time</th>
-                                <th className="py-2 px-4 ">Download</th>
-                                <th className="py-2 px-4 ">Upload</th>
-                                <th className="py-2 px-4 ">Ping</th>
-                                <th className="py-2 px-4 ">Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {speedTestHistory.map((test, index) => (
-                                    <tr key={index}>
-                                    <td className="py-2 px-4 ">{new Date(test.created_at).toLocaleString()}</td>
-                                    <td className="py-2 px-4 ">{test.download_speed}</td>
-                                    <td className="py-2 px-4 ">{test.upload_speed}</td>
-                                    <td className="py-2 px-4 ">{test.ping}</td>
-                                    <td className="py-2 px-4 ">
-                                    <button className="bg-red-500 text-white rounded-full p-2 flex items-center" onClick={() => {deleteSpeedTest(test.created_at)}}>
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                    </td>
-                                    </tr>
-                                ))}
-                                {/* Additional rows can be added dynamically here */}
-                            </tbody>
-                            </table>
-                        </div>
+                        
                         </div>
                     </div>
                 </main>

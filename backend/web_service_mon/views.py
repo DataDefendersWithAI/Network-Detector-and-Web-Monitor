@@ -38,10 +38,10 @@ class WebsiteMonitorView(APIView):
                 run_website_monitor([url,])
             else:
                 run_website_monitor()
+            return Response({'message': 'Website monitor completed.'})
         except Exception as e:
             return Response({'error': "Something went wrong."})
-        finally:
-            return Response({'message': 'Website monitor completed.'})
+            
     
 class AddWebsiteView(APIView):
     """
@@ -107,7 +107,7 @@ class AddWebsiteView(APIView):
             return Response({'error': str(e)})
         else:
             return Response({'message': f'Website deleted successfully with URL: {url}.'})
-    def update(self, request):
+    def put(self, request):
         """
         Update a website in the database based on the URL and provided data.
 
@@ -138,6 +138,11 @@ class AddWebsiteView(APIView):
             monitor_down_events = request.data.get('monitor_down_events')
             dest_ip = request.data.get('dest_ip')
             note = request.data.get('note')
+            # Check if url exists
+            if url is None or url == '':
+                return Response({'error': 'URL is required.'})
+            if not Website.objects.filter(url=url).exists():
+                return Response({'error': f'Website with URL: {url} does not exist.'})
             website = Website.objects.get(url=url)
             website.tag = tag
             website.monitor_all_events = monitor_all_events
@@ -145,10 +150,10 @@ class AddWebsiteView(APIView):
             website.dest_ip = dest_ip
             website.note = note
             website.save()
+            return Response({'message': f'Website updated successfully with URL: {url}.'})
         except Exception as e:
             return Response({'error': str(e)})
-        else:
-            return Response({'message': f'Website updated successfully with URL: {url}.'})
+            
         
 class WebsiteHistoryView(APIView):
     """
@@ -176,38 +181,53 @@ class WebsiteHistoryView(APIView):
         Response
             The response object.
         """
-        action = request.query_params.get('action')
-        url = request.query_params.get('url')
-        if action == 'brief':
-            # Get the last 10 results for each website sorted by timestamp
-            results_list = []
-            websites = Website.objects.all()
-            serializer = WebsiteSerializer(websites, many=True)
-            for website in serializer.data:
-                results = WebsiteResult.objects.filter(website__url=website['url']).order_by('-created_at')[:10]
-                website_results = WebsiteResultSerializer(results, many=True).data
-                status_list = [(int(result['status_code']) // 100 * 100) for result in website_results]
-                serial = {'website': website, 'results': status_list}
-                results_list.append(serial)
-            return Response(results_list)
-        if action == 'detail':
-            website = Website.objects.get(url=url)
-            serializer = WebsiteSerializer(website)
-            return Response(serializer.data)
-        if action == 'list-partial':
-            page = int(request.query_params.get('page', 1))
-            entries = int(request.query_params.get('entries', 10))
-            # Ensure that page and entries are positive integers
-            if page < 1 or entries < 1:
-                return Response({'error': 'Invalid page or entries parameter.'}, status=400)
-            results = WebsiteResult.objects.filter(website__url=url).order_by('-created_at')[(page - 1) * entries:page * entries]
-            serializer = WebsiteResultSerializer(results, many=True)
-            return Response(serializer.data)
-        if action == 'list-all':
-            if url is None:
-                results = WebsiteResult.objects.all().order_by('-created_at')
-            else:
-                results = WebsiteResult.objects.filter(website__url=url).order_by('-created_at')
-            serializer = WebsiteResultSerializer(results, many=True)
-            return Response(serializer.data)
-        return Response({'error': 'Invalid action.'})
+        try:
+            action = request.query_params.get('action')
+            url = request.query_params.get('url')
+            if action == 'brief':
+                # Get the last 10 results for each website sorted by timestamp
+                results_list = []
+                websites = Website.objects.all()
+                serializer = WebsiteSerializer(websites, many=True)
+                for website in serializer.data:
+                    results = WebsiteResult.objects.filter(website__url=website['url']).order_by('-created_at')[:10]
+                    website_results = WebsiteResultSerializer(results, many=True).data
+                    status_list = [(int(result['status_code']) // 100 * 100) for result in website_results]
+                    serial = {'website': website, 'results': status_list}
+                    results_list.append(serial)
+                return Response(results_list)
+            if action == 'detail':
+                website = Website.objects.get(url=url)
+                serializer = WebsiteSerializer(website)
+                return Response(serializer.data)
+            if action == 'list-partial':
+                page = int(request.query_params.get('page', 1))
+                entries = int(request.query_params.get('entries', 10))
+                # Make sure that the asc parameter is a boolean
+                if request.query_params.get('asc', 'false').lower() not in ['true', 'false']:
+                    return Response({'error': 'Invalid asc parameter.'}, status=400)
+                else:
+                    asc = request.query_params.get('asc', 'false').lower() == 'true'
+                order_by = 'created_at' if asc else '-created_at'
+                # Ensure that page and entries are positive integers
+                if page < 1 or entries < 1:
+                    return Response({'error': 'Invalid page or entries parameter.'}, status=400)
+                results = WebsiteResult.objects.filter(website__url=url).order_by(order_by)[(page - 1) * entries:page * entries]
+                serializer = WebsiteResultSerializer(results, many=True)
+                return Response(serializer.data)
+            if action == 'list-all':
+                # Make sure that the asc parameter is a boolean
+                if request.query_params.get('asc', 'false').lower() not in ['true', 'false']:
+                    return Response({'error': 'Invalid asc parameter.'}, status=400)
+                else:
+                    asc = request.query_params.get('asc', 'false').lower() == 'true'
+                order_by = 'created_at' if asc else '-created_at'
+                if url is None:
+                    results = WebsiteResult.objects.all().order_by(order_by)
+                else:
+                    results = WebsiteResult.objects.filter(website__url=url).order_by(order_by)
+                serializer = WebsiteResultSerializer(results, many=True)
+                return Response(serializer.data)
+            return Response({'error': 'Invalid action.'})
+        except Exception as e:
+            return Response({'error': str(e)})
