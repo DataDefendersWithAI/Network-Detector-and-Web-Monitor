@@ -14,10 +14,12 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
         setIsNavOpen(!isNavOpen);
     }
 
+    const server = "http://localhost:3060";
+
     // Function to fetch the speed test history
     const fetchSpeedTestHistory = async () => {
         try {
-        const response = await axios.get('http://localhost:3060/api/speedtest/?action=list');
+        const response = await axios.get(`${server}/api/speedtest/?action=list`);
         setSpeedTestHistory(response.data);
         } catch (error) {
         console.error('Error fetching speed test history:', error);
@@ -28,7 +30,7 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
     const handleSpeedTest = async () => {
         setIsRunning(true); // Show "Running..." state
         try {
-        await axios.get('http://localhost:3060/api/speedtest/');
+        await axios.get(`${server}/api/speedtest/`);
         await fetchSpeedTestHistory(); // Refresh the history after the speed test completes
         } catch (error) {
         console.error('Error running speed test:', error);
@@ -40,7 +42,7 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
     // Function to delete a speed test record
     const deleteSpeedTest = async (created_at) => {
         try {
-        await axios.delete(`http://localhost:3060/api/speedtest/?date=${created_at}/`);
+        await axios.delete(`${server}/api/speedtest/?date=${created_at}/`);
         await fetchSpeedTestHistory(); // Refresh the history after the speed test completes
         } catch (error) {
         console.error('Error deleting speed test:', error);
