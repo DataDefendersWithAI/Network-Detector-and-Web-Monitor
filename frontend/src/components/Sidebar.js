@@ -36,11 +36,11 @@ const Sidebar = ({ isNavOpen }) => {
         {/* <NavItem icon={Network} label="Network" isNavOpen={isNavOpen}/> */}
         {/* When user click on Web Service button, redirect to /web-services */}
         <NavItem icon={Globe} label="Web Services" badge="2" isNavOpen={isNavOpen} path={"/web-services"}/>
-        <NavItem icon={Radio} label="ICMP Monitoring" isNavOpen={isNavOpen}/>
+        <NavItem icon={Radio} label="ICMP Monitoring" isNavOpen={isNavOpen} path={"/ICMP"}/>
         <NavItem icon={FileSearch} label="Package Capture" isNavOpen={isNavOpen} path={"/package-capture"}/>
         <NavItem icon={ChartNetwork} label="Traffic Analysis" isNavOpen={isNavOpen} path={"/traffic-analysis"}/>
         <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Events & Journal</h2>
-        <NavItem icon={Calendar} label="Events" isNavOpen={isNavOpen}/>
+        <NavItem icon={Calendar} label="Events" isNavOpen={isNavOpen} path={"/event"}/>
         {/* <NavItem icon={Users} label="Presence" badge="3/0" isNavOpen={isNavOpen}/> */}
         {/* <NavItem icon={FileText} label="Pi.Alert Journal" isNavOpen={isNavOpen}/> */}
         {/* <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Settings & Help</h2>
