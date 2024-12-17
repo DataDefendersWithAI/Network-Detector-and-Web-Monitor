@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'web_service_mon', # add for website monitoring
     'packet_capture', # add for packet capture
     'traffic_analysis', # add for traffic analysis
+    'notifications', # add for notifications
 ]
 
 MIDDLEWARE = [
@@ -145,6 +146,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CRON
 CRONJOBS = [
     ('*/5 * * * *', 'speedtest_mon.cron.run_speed_test'),
-    ('*/5 * * * *', 'backend.cron.run_website_monitor'),
+    ('*/5 * * * *', 'web_service_mon.cron.run_website_monitor'),
     ('*/3 * * * *', 'ip_scanning.cron.nmap_scan'),
 ]
