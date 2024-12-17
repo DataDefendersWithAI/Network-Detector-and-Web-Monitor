@@ -5,6 +5,7 @@ import DeviceDetails from './components/DeviceDetails';
 import WebServicesMonitor from './components/WebServicesMonitor';
 import PacketCapture from './components/PacketCapture';
 import TrafficAnalysis from './components/TrafficAnalysis';
+import Notifications from './components/Notifications';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/web-services" element={<WebServicesMonitor />} />
         <Route path="/package-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </Router>
   );
