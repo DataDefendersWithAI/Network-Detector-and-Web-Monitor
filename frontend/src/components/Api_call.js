@@ -20,12 +20,51 @@ export async function fetchOpenPackets(
 
     if (response.ok) {
       const parsedPackets = await response.json();
-      setFilteredPacketsShow(Object.entries(parsedPackets.show).map(([key, value]) => `${value}`));
+      setFilteredPacketsShow(Object.entries(parsedPackets.show).map(([, value]) => `${value}`));
       setFilteredPacketsSummary(Object.entries(parsedPackets.summary).map(([key, value]) => `${key}: ${value}`));
     } else {
       console.error("Failed to fetch packets");
     }
   } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+export async function getListCapturedPackets(setCapturedPackets) {
+  try {
+    const response = await fetch("http://localhost:3060/api/list-pcap/", {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      const packets = await response.json().then((data) => data.packets);
+      console.log(packets);
+      setCapturedPackets(packets);
+      // console.log("Captured packets fetched");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+export async function handleDeleteCaptured(file, setCapturedPackets) {
+  const formData = new FormData();
+  formData.append("pcap_file", file);
+
+  try {
+    const response = await fetch("http://localhost:3060/api/delete-pcap/", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      await getListCapturedPackets(setCapturedPackets);
+      // console.log("Capture deleted");
+    } else {
+      console.error("Failed to delete capture");
+    }
+  }
+  catch (error) {
     console.error("Error:", error);
   }
 }
