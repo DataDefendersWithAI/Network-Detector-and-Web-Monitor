@@ -1,33 +1,50 @@
-from scapy.all import sniff, PcapWriter, rdpcap
-from colorama import Fore, Style
+from scapy.all import sniff, PcapWriter
 from threading import Thread
-from scapy.all import *
+from colorama import Fore, Style
+from scapy.all import rdpcap
+import os
 
-OPENED_PCAP_FILE = "pcap_files/opened.pcap"
-CAPTURED_PCAP_FILE = "pcap_files/captured.pcap"
-PCAP_FOLDER = "pcap_files"
 
 class PacketCapture:
     def __init__(self, interface=None, filter_str=None, pcap_file=None):
         self.interface = interface
         self.filter_str = filter_str
         self.pcap_file = pcap_file
-        self.stop = False
+        self.stop = False  # false means stopped
         self.packets = []
-        self.pcap_writer = PcapWriter(self.pcap_file, append=False, sync=True)
+        self.pcap_writer = None
+        if self.pcap_file:
+            self.initialize_pcap_writer()
+
+    def initialize_pcap_writer(self):
+        try:
+            self.pcap_writer = PcapWriter(
+                self.pcap_file, append=False, sync=True)
+        except Exception as e:
+            print(f"Error initializing PcapWriter: {e}")
+            self.pcap_writer = None
 
     def packet_handler(self, packet):
         self.packets.append(packet)
-        self.pcap_writer.write(packet)
-    
-    def reset(self):
-        self.__init__(self.interface, self.filter_str, self.pcap_file)
+        if self.pcap_writer:
+            self.pcap_writer.write(packet)
+        else:
+            print("Warning: pcap_writer is not initialized")
+
+    # __init__ clone
+    def reset(self, interface=None, filter_str=None, pcap_file=None):
+        self.interface = interface
+        self.filter_str = filter_str
+        self.pcap_file = pcap_file
+        self.stop = False
+        self.packets = []
+        self.pcap_writer = None
+        if self.pcap_file:
+            self.initialize_pcap_writer()
 
     def start_monitoring(self):
         if not self.interface:
-            print(f"{Fore.RED}Please specify a network interface to capture packets.{Style.RESET_ALL}")
-            return
-        print(f"{Fore.YELLOW}Starting packet capture on interface: {self.interface}, with filter: {self.filter_str if self.filter_str else 'No filter'}...{Style.RESET_ALL}")
+            return False
         self.sniff_thread = Thread(target=sniff, kwargs={
             'iface': self.interface,
             'filter': self.filter_str,
@@ -35,12 +52,15 @@ class PacketCapture:
             'stop_filter': lambda x: self.stop
         })
         self.sniff_thread.start()
+        return True
 
     def stop_monitoring(self):
         self.stop = True
-        print(f"{Fore.YELLOW}Stopping packet capture...{Style.RESET_ALL}")
-        self.pcap_writer.close()
-        print(f"{Fore.GREEN}Packet capture saved to {self.pcap_file}{Style.RESET_ALL}")
+        if self.pcap_writer:
+            self.pcap_writer.close()
+            print(f"Packet capture saved to {self.pcap_file}")
+        else:
+            print("Warning: pcap_writer is not initialized")
         self.sniff_thread.join()
 
     def find_packets(self, filter=None):
