@@ -148,7 +148,7 @@ const InternetSpeedtest = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Speedtest History</h2>
                 <button
-                  className="bg-blue-500 text-white rounded-full px-4 py-1 flex items-center"
+                  className="bg-blue-500 text-white rounded-full px-4 py-1 flex items-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleSpeedTest}
                   disabled={isRunning}
                 >
@@ -168,7 +168,7 @@ const InternetSpeedtest = () => {
                   <option value="ping">Ping</option>
                   <option value="created_at">Created At</option>
                 </select>
-                <button onClick={toggleSortOrder} className="ml-2">
+                <button onClick={toggleSortOrder} className="ml-2" title="Toggle Sort Order (Ascending/Descending)">
                   {sortOptions.ascending ? (
                     <ArrowUp className="text-white" />
                   ) : (
@@ -225,7 +225,7 @@ const InternetSpeedtest = () => {
                     <button
                     disabled={pagination.page <= 1}
                     onClick={() => fetchPartialData(pagination.page - 1, pagination.entries)}
-                    className="mr-2 bg-gray-700 text-white p-2 rounded"
+                    className="mr-2 bg-gray-700 text-white p-2 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                     Previous
                     </button>
@@ -235,7 +235,7 @@ const InternetSpeedtest = () => {
                     <button
                     disabled={pagination.page >= Math.ceil(pagination.total / pagination.entries)}
                     onClick={() => fetchPartialData(pagination.page + 1, pagination.entries)}
-                    className="ml-2 bg-gray-700 text-white p-2 rounded"
+                    className="ml-2 bg-gray-700 text-white p-2 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                     Next
                     </button>
