@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'ip_scanning', # add for IP scanning
     'speedtest_mon', # add for speed test monitoring
     'web_service_mon', # add for website monitoring
+    'packet_capture', # add for packet capture
+    'traffic_analysis', # add for traffic analysis
 ]
 
 MIDDLEWARE = [
