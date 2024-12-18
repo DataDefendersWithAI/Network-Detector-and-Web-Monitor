@@ -19,5 +19,3 @@ class IPEvent(models.Model):
 
 class HostDatabase(models.Model):
     host = models.CharField(max_length=50)
-    
-    

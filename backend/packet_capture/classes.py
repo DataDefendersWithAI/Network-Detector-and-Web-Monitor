@@ -59,9 +59,9 @@ class PacketCapture:
         if self.pcap_writer:
             self.pcap_writer.close()
             print(f"Packet capture saved to {self.pcap_file}")
+            self.sniff_thread.join()
         else:
             print("Warning: pcap_writer is not initialized")
-        self.sniff_thread.join()
 
     def find_packets(self, filter=None):
         pkts = rdpcap(self.pcap_file) 
