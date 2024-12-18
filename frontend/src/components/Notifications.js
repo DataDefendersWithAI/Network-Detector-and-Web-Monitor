@@ -20,7 +20,7 @@ const Notifications = () => {
         "http://localhost:3060/api/notifications"
       );
       // console.log(response.data.notifications);
-      setNotifications(Array.isArray(response.data.notifications) ? response.data.notifications : []);
+      setNotifications(Array.isArray(response.data.notifications) ? response.data.notifications.reverse() : []);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -29,9 +29,9 @@ const Notifications = () => {
   // Function to mark a notification as read
   const markAsRead = async (notificationId) => {
     try {
-      await axios.patch(
+      await axios.put(
         `http://localhost:3060/api/notifications/${notificationId}/`,
-        { read: true }
+        { action: 'read' }
       );
       fetchNotifications(); // Refresh the notification list
     } catch (error) {
@@ -54,6 +54,11 @@ const Notifications = () => {
   // Fetch notifications when the component mounts
   useEffect(() => {
     fetchNotifications();
+    const ws = new WebSocket("ws://localhost:3060/ws/notifications/");
+    ws.onmessage = (event) => {
+      fetchNotifications();
+    };
+    return () => ws.close();
   }, []);
 
   return (
@@ -71,7 +76,7 @@ const Notifications = () => {
                 <div className="flex justify-start items-center mb-4">
                   <h2 className="text-xl font-semibold">Notifications</h2>
                   <span className="ml-4 bg-blue-500 text-white rounded-full px-3 py-1 text-sm">
-                    {notifications.filter((n) => !n.read).length} Unread
+                    {notifications.filter((n) => !(n.status === "Read")).length} Unread
                   </span>
                 </div>
                 <table className="min-w-full text-left">
@@ -88,10 +93,10 @@ const Notifications = () => {
                       <tr key={notification.id}>
                         <td className="py-2 px-4">{notification.message}</td>
                         <td className="py-2 px-4">
-                          {new Date(notification.created_at).toLocaleString()}
+                          {new Date(notification.date).toLocaleString()}
                         </td>
                         <td className="py-2 px-4">
-                          {notification.read ? (
+                          {notification.status === "Read" ? (
                             <span className="text-green-500">Read</span>
                           ) : (
                             <span className="text-yellow-500">Unread</span>
@@ -99,7 +104,7 @@ const Notifications = () => {
                         </td>
                         <td className="py-2 px-4 flex space-x-2">
                           {/* Mark as Read */}
-                          {!notification.read && (
+                          {!(notification.status === "Read") && (
                             <button
                               className="bg-green-500 text-white rounded-full p-2"
                               onClick={() => markAsRead(notification.id)}
