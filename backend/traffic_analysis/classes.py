@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from scapy.all import rdpcap
 import matplotlib.pyplot as plt
+from scapy.all import rdpcap
 from scapy.all import *
 from io import BytesIO
 import networkx as nx

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Play, StopCircle, Save, FolderOpen, RefreshCw } from "lucide-react";
+import { Play, Pause, Save, FolderOpen, RefreshCw } from "lucide-react";
 import Sidebar from "./Sidebar";
 import "../App.css";
 import Headerbar from "./Headerbar";
@@ -222,34 +222,39 @@ const PacketCapture = () => {
                       Apply
                     </button>
                   </div>
+                  <label className="block mt-2 text-xs"> * Leave empty to capture all packets, syntax: <a href="https://biot.com/capstats/bpf.html"><u>Berkeley Packet Filter (BPF)</u></a></label>
                 </div>
                 <div className="flex space-x-2 items-center">
                   <button
                     onClick={handleStartCapture}
                     className={`${
                       isCapturing ? "bg-gray-500" : "bg-green-500"
-                    } p-2 rounded`}
+                    } p-2 rounded flex items-center`}
                   >
+                    <Play className="w-5 h-5" />
                     Start
                   </button>
                   <button
                     onClick={handleStopCapture}
                     className={`${
                       isCapturing ? "bg-red-500" : "bg-gray-500"
-                    } p-2 rounded`}
+                    } p-2 rounded items-center flex`}
                   >
+                    <Pause className="w-5 h-5" />
                     Stop
                   </button>
                   <button
                     onClick={handleSaveCapture}
-                    className="bg-blue-500 p-2 rounded"
+                    className="bg-blue-500 p-2 rounded items-center flex"
                   >
+                    <Save className="w-5 h-5" />
                     Save
                   </button>
                   <button
                     onClick={handleUpdateButton}
-                    className="bg-yellow-500 p-2 rounded"
+                    className="bg-yellow-500 p-2 rounded items-center flex"
                   >
+                    <RefreshCw className="w-5 h-5" />
                     Update
                   </button>
                   {saveMessage && (
@@ -291,7 +296,7 @@ const PacketCapture = () => {
               </div>
             </div>
             <div className="w-1/2 bg-gray-800 p-4 rounded-lg overflow-auto">
-              {selectedPacketIndex != -1 ? (
+              {selectedPacketIndex !== -1 ? (
                 <>
                   <h2 className="text-xl font-bold mb-2">Packet Details</h2>
                   <div>
@@ -328,11 +333,12 @@ const PacketCapture = () => {
                     <td className="py-2 px-4">{infos.id}</td>
                     <td className="py-2 px-4">{infos.interface}</td>
                     <td className="py-2 px-4">{infos.filter_str}</td>
-                    <td className="py-2 px-4">{infos.end_time}</td>
+                    <td className="py-2 px-4">{infos.end_time? new Date(infos.end_time).toLocaleString() : 'unknown'}</td>
                     <td className="py-2 px-4">{infos.status}</td>
                     <td className="py-2 px-4">
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleDeleteButton(index);
                         }}
                         className="bg-red-500 p-2 rounded"

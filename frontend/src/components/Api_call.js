@@ -35,6 +35,7 @@ export async function getViewPcap(
     formData.append("pcap_file", file);
   if (filter)
     formData.append("filter", filter);
+  formData.append("action", "view");
 
   try {
     const response = await fetch("http://localhost:3060/api/view-pcap/", {
@@ -62,7 +63,7 @@ export async function getListCapturedPackets(setCapturedPackets) {
 
     if (response.ok) {
       const packets = await response.json().then((data) => data.packets);
-      setCapturedPackets(packets);
+      setCapturedPackets(packets.reverse());
       // console.log("Captured packets fetched");
     }
   } catch (error) {

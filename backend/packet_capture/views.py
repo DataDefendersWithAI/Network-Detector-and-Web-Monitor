@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from .models import CapturedPacket
 from .classes import PacketCapture
 from django.utils import timezone
+from django.db import transaction
 import os
 
 PCAP_FOLDER = "pcap_files"
@@ -73,35 +74,20 @@ class PcapOpenView(APIView):
 # This view will return a list of all the captured packets.
 class PcapListView(APIView):
     def get(self, request):
-        packets = CapturedPacket.objects.all()
-        packet_list = []
-        for packet in packets:
-            end_time = format(packet.end_time, '%Y-%m-%d %H:%M:%S') if packet.end_time else None
-            packet_list.append({
-                'id': packet.id,
-                'interface': packet.interface,
-                'start_time': packet.start_time,
-                'end_time': end_time,
-                'pcap_file': packet.pcap_file,
-                'status': packet.status
-            })
-        return Response({'packets': packet_list})
+        return Response({'packets': CapturedPacket.objects.values()})
     
 class PcapDeleteView(APIView):
     def post(self, request):
         pcap_file = request.data.get('pcap_file')
         full_path_pcap_file = os.path.join(PCAP_FOLDER, pcap_file)
-        if os.path.exists(full_path_pcap_file):
-            try:
-                # remove the record from the database first
-                CapturedPacket.objects.filter(pcap_file=pcap_file).delete()
-                # Delete the pcap file
-                os.remove(full_path_pcap_file)
-                return Response({'message': 'Pcap file deleted.'})
-            except Exception as e:
-                return Response({'error': str(e)})
-        else:
-            return Response({'error': 'Pcap file not found.'})
+        try:
+            # remove the record from the database first
+            CapturedPacket.objects.filter(pcap_file=pcap_file).delete()
+            # Delete the pcap file
+            os.remove(full_path_pcap_file)
+            return Response({'message': 'Pcap file deleted.'})
+        except Exception as e:
+            return Response({'error': str(e)})
 
 # Capture packets from host machine
 # This view will capture packets from the host machine and save them to a pcap file.
@@ -119,23 +105,23 @@ class PcapCaptureView(APIView):
                 status='unknown'
             )
             full_path_pcap_file = os.path.join(PCAP_FOLDER, packet_capture.pcap_file)
-            packet_capture.save()
             monitor.reset(interface=interface, filter_str=filter, pcap_file=full_path_pcap_file)
             if monitor.start_monitoring() == True:
                 return Response({'message': 'Packet capture started.'})
             else:
                 return Response({'error': f'Starting packet capture failed. {monitor.interface}'})
         if action == 'stop':
-            packet_capture = CapturedPacket.objects.filter(status='unknown').last()
-            if packet_capture:
-                packet_capture.end_time = timezone.now()
-                packet_capture.save()
-                if monitor.stop_monitoring() == True:
-                    return Response({'message': 'Packet capture stopped.'})
+            with transaction.atomic():
+                packet_capture = CapturedPacket.objects.last()
+                if packet_capture:
+                    packet_capture.end_time = timezone.now()
+                    packet_capture.save()
+                    if monitor.stop_monitoring() == True:
+                        return Response({'message': 'Packet capture stopped.'})
+                    else:
+                        return Response({'error': 'Stopping packet capture failed.'})
                 else:
-                    return Response({'error': 'Stopping packet capture failed.'})
-            else:
-                return Response({'error': 'No active packet capture found.'})
+                    return Response({'error': 'No active packet capture found.'})
         if action == 'save':
             pcap_file_path = monitor.pcap_file
             if os.path.exists(pcap_file_path):

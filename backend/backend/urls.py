@@ -30,4 +30,5 @@ urlpatterns = [
     path('', include('ip_scanning.urls')),
     path('', include('speedtest_mon.urls')),
     path('', include('web_service_mon.urls')),
+    path('', include('notifications.urls'))
 ]
