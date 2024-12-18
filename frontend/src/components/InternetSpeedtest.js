@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, ChevronUp, ChevronDown, ArrowUpDown } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Headerbar from "./Headerbar";
 import axios from "axios";
@@ -77,17 +77,10 @@ const InternetSpeedtest = () => {
   };
 
   // 5. Handle Sorting Options Change
-  const toggleSortOrder = () => {
+  const handleSort = (column) => {
     setSortOptions((prev) => ({
-      ...prev,
-      ascending: !prev.ascending,
-    }));
-  };
-
-  const handleSortFieldChange = (e) => {
-    setSortOptions((prev) => ({
-      ...prev,
-      field: e.target.value,
+      field: column,
+      ascending: prev.field === column ? !prev.ascending : true,
     }));
   };
 
@@ -101,7 +94,7 @@ const InternetSpeedtest = () => {
     <div className="flex bg-gray-900 text-white min-h-screen">
       <Sidebar isNavOpen={isNavOpen} />
       <div className="flex-grow">
-        <Headerbar onToggleNav={toggleNav} headerContent={"Internet Speedtest"} />
+        <Headerbar onToggleNav={toggleNav} headerContent={"Internet Speedtest"} syncCallback={handleSpeedTest} syncDisabled={isRunning} />
         <main className="p-6">
           <div className="bg-gray-800 p-4 rounded-lg">
 
@@ -109,7 +102,6 @@ const InternetSpeedtest = () => {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Brief Statistics</h2>
               {briefStats && (
-                
                 <table className="w-full table-auto mt-4">
                     <thead>
                         <tr className="text-left">
@@ -147,34 +139,14 @@ const InternetSpeedtest = () => {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Speedtest History</h2>
-                <button
+                {/* <button
                   className="bg-blue-500 text-white rounded-full px-4 py-1 flex items-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleSpeedTest}
                   disabled={isRunning}
                 >
                   <Plus className="mr-2" />
-                  {isRunning ? "Running..." : "Scan Now"}
-                </button>
-              </div>
-              <div className="flex items-center mb-4">
-                <label className="mr-2">Sort By:</label>
-                <select
-                  value={sortOptions.field}
-                  onChange={handleSortFieldChange}
-                  className="bg-gray-700 text-white p-2 rounded"
-                >
-                  <option value="download_speed">Download Speed</option>
-                  <option value="upload_speed">Upload Speed</option>
-                  <option value="ping">Ping</option>
-                  <option value="created_at">Created At</option>
-                </select>
-                <button onClick={toggleSortOrder} className="ml-2" title="Toggle Sort Order (Ascending/Descending)">
-                  {sortOptions.ascending ? (
-                    <ArrowUp className="text-white" />
-                  ) : (
-                    <ArrowDown className="text-white" />
-                  )}
-                </button>
+                  {isRunning ? "Running..." : "Test Now"}
+                </button> */}
                 <div className="ml-auto">
                   <label className="mr-2">Entries per page:</label>
                   <select
@@ -191,13 +163,50 @@ const InternetSpeedtest = () => {
                 </div>
               </div>
               <table className="w-full table-auto mb-4">
-                <thead>
+              <thead>
                   <tr className="text-left">
-                    <th>Created At</th>
-                    <th>Download</th>
-                    <th>Upload</th>
-                    <th>Ping</th>
-                    <th>Delete</th>
+                    {/* Column Headers with Sort Controls */}
+                    <th className="py-2 px-4 *:m-2">
+                      <div className="inline-flex items-center cursor-pointer" onClick={() => handleSort("created_at")}>
+                        <span className="mr-2">Tested Time</span>
+                        {sortOptions.field === "created_at" ? (
+                          sortOptions.ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                        ) : (
+                            <ArrowUpDown size={14} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="py-2 px-4">
+                      <div className="inline-flex items-center cursor-pointer" onClick={() => handleSort("download_speed")}>
+                        <span className="mr-2">Download</span>
+                        {sortOptions.field === "download_speed" ? (
+                          sortOptions.ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                        ) : (
+                            <ArrowUpDown size={14} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="py-2 px-4">
+                      <div className="inline-flex items-center cursor-pointer" onClick={() => handleSort("upload_speed")}>
+                        <span className="mr-2">Upload</span>
+                        {sortOptions.field === "upload_speed" ? (
+                          sortOptions.ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                        ) : (
+                          <ArrowUpDown size={14} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="py-2 px-4">
+                      <div className="inline-flex items-center cursor-pointer" onClick={() => handleSort("ping")}>
+                        <span className="mr-2">Ping</span>
+                        {sortOptions.field === "ping" ? (
+                          sortOptions.ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                        ) : (
+                            <ArrowUpDown size={14} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="py-2 px-4">Delete</th>
                   </tr>
                 </thead>
                 <tbody>

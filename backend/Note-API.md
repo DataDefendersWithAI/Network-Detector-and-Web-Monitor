@@ -732,6 +732,7 @@ Fetches speed test records based on the `action` query parameter.
 |-------------|---------|----------|-------------------------------------------------------------|
 | `action`    | string  | Yes      | Determines the type of results (`brief`, `detail`, `list-partial`, `list-all`). |
 | `url`       | string  | No       | Specific website URL (required for `detail` and `list-partial`).|
+| `limit`     | integer | No       | Limit the number of results (`brief`).                   |
 | `page`      | integer | No       | Page number for pagination (`list-partial`).                |
 | `entries`   | integer | No       | Number of results per page (`list-partial`).                |
 | `asc`       | boolean | No       | Sort order: `true` for ascending, `false` for descending.  |
