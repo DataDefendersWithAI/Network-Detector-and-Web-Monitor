@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/speedtest" element={<InternetSpeedtest />} />
         <Route path ="/ICMP" element={<ICMP />} />
-        <Route path="/event" element={<Event />} />
+        <Route path="/event" element={<Events />} />
       </Routes>
     </Router>
   );
