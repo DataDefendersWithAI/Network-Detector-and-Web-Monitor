@@ -41,10 +41,6 @@ const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncD
         <h1 className="text-white text-2xl">{headerContent}</h1>
       </div>
       <div className="flex items-center space-x-2">
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-          <span>Active</span>
-        </div>
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
