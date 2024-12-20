@@ -4,7 +4,6 @@ import { Menu, RefreshCcw, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-
 const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncDisabled }) => {
   const [systemInfo, setSystemInfo] = useState(null);
   
@@ -23,18 +22,19 @@ const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncD
   }, []);
 
   return (
-    <header className="bg-blue-600 p-4 flex justify-between items-center">
+    <header className="bg-blue-600 p-1 flex justify-between items-center">
       <div className="flex items-center">
-        <button onClick={toggleNav} className="text-white mr-4">
+        <button onClick={toggleNav} className="text-white p-4 pr-2 cursor-pointer">
           <Menu size={24} />
         </button>
         {backCallback && (
-          <button onClick={backCallback} className="text-white mr-4">
+          <button onClick={backCallback} className="text-white p-4 pl-2 cursor-pointer">
             <ArrowLeft size={24} />
           </button>
         )}
+        {/* Button to call sync */}
         {syncCallback && (
-          <button onClick={syncCallback} className="text-white mr-4 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" disabled={syncDisabled}>
+          <button onClick={syncCallback} className="text-white mr-4 -4 pl-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" disabled={syncDisabled}>
             <RefreshCcw size={24} />
           </button>
         )}
@@ -45,16 +45,24 @@ const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncD
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           <span>Active</span>
         </div>
-        {systemInfo && (
-          <>
-            <div>Load: {systemInfo.avgload}</div>
-            <div>Memory usage: {systemInfo.memusage}%</div>
-            <div>Temp: {systemInfo.cputemp}°C</div>
-          </>
-        )}
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span>Active</span>
+          </div>
+          {systemInfo && (
+            <>
+              <div>Load: {systemInfo.avgload}</div>
+              <div>Memory usage: {systemInfo.memusage}%</div>
+              <div>Temp: {systemInfo.cputemp}°C</div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
 };
 
 export default Headerbar;
+
+
