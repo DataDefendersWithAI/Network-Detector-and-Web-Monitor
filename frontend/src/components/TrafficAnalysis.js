@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Upload, CheckCircle, AlertTriangle } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useEffect } from "react";
 import Headerbar from "./Headerbar";
 import Sidebar from "./Sidebar";
