@@ -1,21 +1,53 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Upload, CheckCircle, AlertTriangle } from "lucide-react";
+import { useEffect } from "react";
 import Headerbar from "./Headerbar";
 import Sidebar from "./Sidebar";
 
 const TrafficAnalysis = () => {
-  const [alertColor, setAlertColor] = useState("");
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [alertText, setAlertText] = useState("");
+  const [alertText, setAlertText] = useState(localStorage.getItem("alertText") || "");
+  const [alertColor, setAlertColor] = useState("text-yellow-500");
   const [debug, setDebug] = useState(false);
   const [filter, setFilter] = useState("");
   const [graphs, setGraphs] = useState({});
   const [file, setFile] = useState(null);
 
-  const toggleNav = () => {
+  function toggleNav() {
     setIsNavOpen(!isNavOpen);
+  }
+
+  useEffect(() => {
+    fetchGraphs();
+  }, []);
+
+  // save alertText in local storage
+  useEffect(() => {
+    localStorage.setItem("alertText", alertText);
+  }, [alertText]);
+
+  const fetchGraphs = async () => {
+    try {
+      const response = await axios.get("http://localhost:3060/api/pcap-analysis/");
+      if (response.data.error) {
+        setAlertText(response.data.error);
+        setAlertColor("text-red-500");
+        return;
+      }
+      setGraphs(response.data.graphs);
+      if (response.data.status === 'clean') {
+        setAlertText(response.data.file_name + " is clean.");
+        setAlertColor("text-green-500");
+      }
+      else if (response.data.status === 'suspicious') {
+        setAlertText(response.data.file_name +" is sus.");
+        setAlertColor("text-red-500");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -47,8 +79,14 @@ const TrafficAnalysis = () => {
       }
       // console.log(response.data);
       setGraphs(response.data.graphs);
-      setAlertText(response.data.alert_text);
-      setAlertColor(response.data.alert_color);
+      if (response.data.status === 'clean') {
+        setAlertText(file.name+" is clean.");
+        setAlertColor("text-green-500");
+      }
+      else if (response.data.status === 'suspicious') {
+        setAlertText(file.name+" is sus.");
+        setAlertColor("text-red-500");
+      }
       setIsAnalyzing(false);
     } catch (err) {
       console.error(err);

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne', # add for ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +48,18 @@ INSTALLED_APPS = [
     'web_service_mon', # add for website monitoring
     'packet_capture', # add for packet capture
     'traffic_analysis', # add for traffic analysis
+    'notifications', # add for notifications
+    'channels', # add for websockets (notifications require this)
 ]
+
+ASGI_APPLICATION = 'backend.asgi.application'
+
+# Configure the channels layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -125,7 +137,7 @@ TIME_ZONE = "Asia/Ho_Chi_Minh"
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -145,6 +157,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CRON
 CRONJOBS = [
     ('*/5 * * * *', 'speedtest_mon.cron.run_speed_test'),
-    ('*/5 * * * *', 'backend.cron.run_website_monitor'),
+    ('*/5 * * * *', 'web_service_mon.cron.run_website_monitor'),
     ('*/3 * * * *', 'ip_scanning.cron.nmap_scan'),
 ]
