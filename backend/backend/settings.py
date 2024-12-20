@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'traffic_analysis', # add for traffic analysis
     'notifications', # add for notifications
     'devices', # add for devices
+    'system', # add for system
 ]
 
 ASGI_APPLICATION = 'backend.asgi.application'
