@@ -62,10 +62,10 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
 
     // Run the monitor at /api/web-monitor/run/
     const handleRunMonitor = async () => {
+        setIsMonitorStarted(true);
         try {
             await axios.get(`${server}/run/`);
             fetchBriefResults(limit);
-            setIsMonitorStarted(true);
         } catch (error) {
             console.error("Error running monitor:", error);
         }
@@ -136,7 +136,7 @@ const WebServicesMonitor = ({ onDeviceClick }) => {
                                                         between(item.results[item.results.length - 1], 200, 299) ? "text-green-500": 
                                                         between(item.results[item.results.length - 1], 500, 599) ? "text-red-500": 
                                                             "text-blue-400"
-                                                        } hover:underline cursor-pointer`} onClick={() => window.location.href = `/web-services/${item.website.url}`}>
+                                                        } hover:underline cursor-pointer`} onClick={() => window.location.href = `/web-services/details/?url=${item.website.url}`}>
                                                         {item.website.url}
                                                     </td>
                                                     <td className="py-2 px-4">{item.website.tag || "-"}</td>

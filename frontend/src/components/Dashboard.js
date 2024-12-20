@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, ChevronDown } from 'lucide-react';
-import '../App.css'
+import '../App.css';
 import Sidebar from './Sidebar';
 import Headerbar from './Headerbar';
 

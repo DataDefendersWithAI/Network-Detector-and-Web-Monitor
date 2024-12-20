@@ -21,7 +21,7 @@ const App = () => {
         <Route path="/speedtest" element={<InternetSpeedtest />} />
         <Route path ="/ICMP" element={<ICMP />} />
         <Route path="/event" element={<Event />} />
-        <Route path="/web-services/:id" element={<WebsiteDetails/>} />
+        <Route path="/web-services/details" element={<WebsiteDetails/>} />
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
     </Router>

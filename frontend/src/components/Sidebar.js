@@ -32,10 +32,10 @@ const Sidebar = ({ isNavOpen }) => {
       </div>
       <div className="flex-grow">
         <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Main Menu</h2>
-        <NavItem icon={Monitor} label="Devices" badge="2 3" isNavOpen={isNavOpen} path={"/"}/>
+        <NavItem icon={Monitor} label="Devices" isNavOpen={isNavOpen} path={"/"}/>
         {/* <NavItem icon={Network} label="Network" isNavOpen={isNavOpen}/> */}
         {/* When user click on Web Service button, redirect to /web-services */}
-        <NavItem icon={Globe} label="Web Services" badge="2" isNavOpen={isNavOpen} path={"/web-services"}/>
+        <NavItem icon={Globe} label="Web Services" isNavOpen={isNavOpen} path={"/web-services"}/>
         <NavItem icon={Gauge} label="Internet Speedtest" isNavOpen={isNavOpen} path={"/speedtest"}/>
         <NavItem icon={Radio} label="ICMP Monitoring" isNavOpen={isNavOpen} path={"/ICMP"}/>
         <NavItem icon={FileSearch} label="Package Capture" isNavOpen={isNavOpen} path={"/package-capture"}/>

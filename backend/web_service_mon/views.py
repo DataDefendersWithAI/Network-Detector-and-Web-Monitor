@@ -101,12 +101,18 @@ class AddWebsiteView(APIView):
         """
         try:
             url = request.data.get('url')
+            print(url)
+            # Check if url exists
+            if url is None or url == '':
+                return Response({'error': 'URL is required.'})
+            if not Website.objects.filter(url=url).exists():
+                return Response({'error': f'Website with URL: {url} does not exist.'})
             website = Website.objects.get(url=url)
             website.delete()
+            return Response({'message': f'Website deleted successfully with URL: {url}.'})
         except Exception as e:
             return Response({'error': str(e)})
-        else:
-            return Response({'message': f'Website deleted successfully with URL: {url}.'})
+            
     def put(self, request):
         """
         Update a website in the database based on the URL and provided data.
@@ -143,11 +149,16 @@ class AddWebsiteView(APIView):
                 return Response({'error': 'URL is required.'})
             if not Website.objects.filter(url=url).exists():
                 return Response({'error': f'Website with URL: {url} does not exist.'})
+            # Destination IP is not editable, so check if dest_ip is the same
+            if dest_ip is not None:
+                website = Website.objects.get(url=url)
+                if website.dest_ip != dest_ip:
+                    return Response({'error': 'Destination IP is not editable.'})
             website = Website.objects.get(url=url)
             website.tag = tag
             website.monitor_all_events = monitor_all_events
             website.monitor_down_events = monitor_down_events
-            website.dest_ip = dest_ip
+            # website.dest_ip = dest_ip
             website.note = note
             website.save()
             return Response({'message': f'Website updated successfully with URL: {url}.'})
@@ -218,9 +229,16 @@ class WebsiteHistoryView(APIView):
                 # Ensure that page and entries are positive integers
                 if page < 1 or entries < 1:
                     return Response({'error': 'Invalid page or entries parameter.'}, status=400)
+                total_records = WebsiteResult.objects.filter(website__url=url).count()
                 results = WebsiteResult.objects.filter(website__url=url).order_by(order_by)[(page - 1) * entries:page * entries]
                 serializer = WebsiteResultSerializer(results, many=True)
-                return Response(serializer.data)
+                response_data = {
+                    'from': (page - 1) * entries + 1,
+                    'to': min(page * entries, total_records),
+                    'total': total_records,
+                    'results': serializer.data
+                }
+                return Response(response_data)
             if action == 'list-all':
                 sortby = request.query_params.get('sortby', 'created_at')
                 # Validate sortby parameter
@@ -234,10 +252,16 @@ class WebsiteHistoryView(APIView):
                 order_by = sortby if asc else f'-{sortby}'
                 if url is None:
                     results = WebsiteResult.objects.all().order_by(order_by)
+                    total_records = WebsiteResult.objects.count()
                 else:
                     results = WebsiteResult.objects.filter(website__url=url).order_by(order_by)
+                    total_records = WebsiteResult.objects.filter(website__url=url).count()
                 serializer = WebsiteResultSerializer(results, many=True)
-                return Response(serializer.data)
+                response_data = {
+                    'total': total_records,
+                    'results': serializer.data
+                }
+                return Response(response_data)
             return Response({'error': 'Invalid action.'})
         except Exception as e:
             return Response({'error': str(e)})
