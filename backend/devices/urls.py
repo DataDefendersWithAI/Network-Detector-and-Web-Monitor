@@ -16,15 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import DeviceListView, DeviceDetailView
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('devices.urls')),
-    path('', include('packet_capture.urls')),
-    path('', include('traffic_analysis.urls')),
-    path('', include('icmp_monitoring.urls')),
-    path('', include('ip_scanning.urls')),
-    path('', include('speedtest_mon.urls')),
-    path('', include('web_service_mon.urls')),
-    path('', include('notifications.urls'))
+    path('api/devices/', DeviceListView.as_view(), name='device-list'),
+    path('api/devices/<str:mac>/', DeviceDetailView.as_view(), name='device-detail'),
 ]
