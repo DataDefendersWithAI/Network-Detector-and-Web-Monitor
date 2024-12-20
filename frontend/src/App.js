@@ -9,7 +9,7 @@ import Notifications from './components/Notifications';
 import Events from './components/Events';
 import ICMP from './components/ICMP';
 import InternetSpeedtest from './components/InternetSpeedtest';
-
+import WebsiteDetails from './components/WebsiteDetails';
 
 const App = () => {
   return (
@@ -24,6 +24,8 @@ const App = () => {
         <Route path="/speedtest" element={<InternetSpeedtest />} />
         <Route path="/ICMP" element={<ICMP />} />
         <Route path="/event" element={<Events />} />
+        <Route path="/web-services/:id" element={<WebsiteDetails/>} />
+        <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
     </Router>
   );

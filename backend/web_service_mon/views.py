@@ -185,14 +185,16 @@ class WebsiteHistoryView(APIView):
             action = request.query_params.get('action')
             url = request.query_params.get('url')
             if action == 'brief':
-                # Get the last 10 results for each website sorted by timestamp
+                # Get the last N results for each website sorted by timestamp
+                limit = int(request.query_params.get('limit', 10))
                 results_list = []
                 websites = Website.objects.all()
                 serializer = WebsiteSerializer(websites, many=True)
                 for website in serializer.data:
-                    results = WebsiteResult.objects.filter(website__url=website['url']).order_by('-created_at')[:10]
+                    results = WebsiteResult.objects.filter(website__url=website['url']).order_by('-created_at')[:limit]
                     website_results = WebsiteResultSerializer(results, many=True).data
-                    status_list = [(int(result['status_code']) // 100 * 100) for result in website_results]
+                    # Get the status code for each result
+                    status_list = [result['status_code'] for result in website_results]
                     serial = {'website': website, 'results': status_list}
                     results_list.append(serial)
                 return Response(results_list)
@@ -203,12 +205,16 @@ class WebsiteHistoryView(APIView):
             if action == 'list-partial':
                 page = int(request.query_params.get('page', 1))
                 entries = int(request.query_params.get('entries', 10))
+                sortby = request.query_params.get('sortby', 'created_at')
+                # Validate sortby parameter
+                if sortby not in ['created_at', 'status_code', 'latency']:
+                    return Response({'error': 'Invalid sortby parameter.'}, status=400)
                 # Make sure that the asc parameter is a boolean
                 if request.query_params.get('asc', 'false').lower() not in ['true', 'false']:
                     return Response({'error': 'Invalid asc parameter.'}, status=400)
                 else:
                     asc = request.query_params.get('asc', 'false').lower() == 'true'
-                order_by = 'created_at' if asc else '-created_at'
+                order_by = sortby if asc else f'-{sortby}'
                 # Ensure that page and entries are positive integers
                 if page < 1 or entries < 1:
                     return Response({'error': 'Invalid page or entries parameter.'}, status=400)
@@ -216,12 +222,16 @@ class WebsiteHistoryView(APIView):
                 serializer = WebsiteResultSerializer(results, many=True)
                 return Response(serializer.data)
             if action == 'list-all':
+                sortby = request.query_params.get('sortby', 'created_at')
+                # Validate sortby parameter
+                if sortby not in ['created_at', 'status_code', 'latency']:
+                    return Response({'error': 'Invalid sortby parameter.'}, status=400)
                 # Make sure that the asc parameter is a boolean
                 if request.query_params.get('asc', 'false').lower() not in ['true', 'false']:
                     return Response({'error': 'Invalid asc parameter.'}, status=400)
                 else:
                     asc = request.query_params.get('asc', 'false').lower() == 'true'
-                order_by = 'created_at' if asc else '-created_at'
+                order_by = sortby if asc else f'-{sortby}'
                 if url is None:
                     results = WebsiteResult.objects.all().order_by(order_by)
                 else:
