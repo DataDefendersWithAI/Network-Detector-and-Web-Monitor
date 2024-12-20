@@ -40,25 +40,29 @@ class DatabaseChangeDetector:
             Notification.objects.create(
                 message=f"Web service new result of {new_website_results.first().dest_ip}, status: {new_website_results.first().status_code}", 
                 status="New",
-                severity="info")
+                severity="info",
+                date=new_website_results.first().created_at)
             self.send_notification("New WebsiteResult detected")
         if new_speed_tests.exists():
             Notification.objects.create(
                 message=f"New speed test result: {new_speed_tests.first()}", 
                 status="New",
-                severity="info")
+                severity="info",
+                date=new_speed_tests.first().created_at)
             self.send_notification("New SpeedTest detected")
         if new_ip_databases.exists():
             Notification.objects.create(
                 message=f"New IP detected: {new_ip_databases.first().ip_address}", 
                 status="New",
-                severity="warning")
+                severity="warning",
+                date=new_ip_databases.first().scan_date)
             self.send_notification("New IPdatabase entry detected")
         if new_captured_packets.exists():
             Notification.objects.create(
                 message=f"New packets captured {new_captured_packets.first().pcap_file}", 
                 status="New",
-                severity="warning")
+                severity="warning",
+                date=new_captured_packets.first().end_time)
             self.send_notification("New CapturedPacket detected")
         if new_traffic_analysis.exists():
             severity = "info"
@@ -72,7 +76,8 @@ class DatabaseChangeDetector:
             Notification.objects.create(
                 message=f"PCAP file analysis completed, {new_traffic_analysis.first().pcap_file} is {new_traffic_analysis.first().status}", 
                 status="New",
-                severity=severity)
+                severity=severity,
+                date=new_traffic_analysis.first().scan_at)
             self.send_notification("New TrafficAnalysisModel detected")
 
         LastChecked.objects.filter(id=1).update(
