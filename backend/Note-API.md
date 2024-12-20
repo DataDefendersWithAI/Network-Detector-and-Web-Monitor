@@ -732,6 +732,7 @@ Fetches speed test records based on the `action` query parameter.
 |-------------|---------|----------|-------------------------------------------------------------|
 | `action`    | string  | Yes      | Determines the type of results (`brief`, `detail`, `list-partial`, `list-all`). |
 | `url`       | string  | No       | Specific website URL (required for `detail` and `list-partial`).|
+| `limit`     | integer | No       | Limit the number of results (`brief`).                   |
 | `page`      | integer | No       | Page number for pagination (`list-partial`).                |
 | `entries`   | integer | No       | Number of results per page (`list-partial`).                |
 | `asc`       | boolean | No       | Sort order: `true` for ascending, `false` for descending.  |
@@ -766,28 +767,36 @@ Fetches speed test records based on the `action` query parameter.
 
 3. **Action: `list-partial`**
 ```json
-[
-  {
-    "id": 1,
-    "status_code": 200,
-    "latency": 123.4,
-    "created_at": "2024-11-20T10:30:00Z"
-  },
-  ...
-]
+{
+  "from": 1,
+  "to": 5,
+  "total": 9,
+  "results": [
+    {
+      "website": "wayback-api.archive.org",
+      "status_code": 200,
+      "latency": 1.282838,
+      "created_at": "2024-12-18T22:26:27.924157"
+    },
+    ...
+    ]
+}
 ```
 
 4. **Action: `list-all`**
 ```json
-[
-  {
-    "id": 1,
-    "status_code": 200,
-    "latency": 123.4,
-    "created_at": "2024-11-20T10:30:00Z"
-  },
-  ...
-]
+{
+  "total": 9,
+  "results": [
+    {
+      "website": "wayback-api.archive.org",
+      "status_code": 200,
+      "latency": 1.282838,
+      "created_at": "2024-12-18T22:26:27.924157"
+    },
+    ...
+    ]
+}
 ```
 
 5. **Invalid Action**

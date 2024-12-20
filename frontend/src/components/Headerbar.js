@@ -1,13 +1,24 @@
 // Headerbar.js
 import React from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, RefreshCcw, ArrowLeft } from 'lucide-react';
 
-const Headerbar = ({ toggleNav, headerContent }) => (
-  <header className="bg-blue-600 p-4 flex justify-between items-center">
+const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncDisabled }) => (
+  <header className="bg-blue-600 p-1 flex justify-between items-center">
     <div className="flex items-center">
-      <button onClick={toggleNav} className="text-white mr-4">
+      <button onClick={toggleNav} className="text-white p-4 pr-2 cursor-pointer">
         <Menu size={24} />
       </button>
+      {backCallback && (
+        <button onClick={backCallback} className="text-white p-4 pl-2 cursor-pointer">
+          <ArrowLeft size={24} />
+        </button>
+      )}
+      {/* Button to call sync */}
+      {syncCallback && (
+        <button onClick={syncCallback} className="text-white mr-4 -4 pl-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" disabled={syncDisabled}>
+          <RefreshCcw size={24} />
+        </button>
+      )}
       <h1 className="text-white text-2xl">{headerContent}</h1>
     </div>
     <div className="flex items-center space-x-2">

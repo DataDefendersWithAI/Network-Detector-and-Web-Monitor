@@ -30,7 +30,7 @@ class SpeedTestView(APIView):
         # Delete "/" in date_delete
         date_delete = date_delete.replace("/", "")
         # Check if date_delete is in correct format
-        if not re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.?\d*Z', date_delete):
+        if not re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.?\d*Z?', date_delete):
             return Response({'error': 'Invalid date format.'}, status=400)
         
         speed_test_date = SpeedTest.objects.filter(created_at=date_delete)
