@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db import transaction
 import os
 
-PCAP_FOLDER = "pcap_files"
+PCAP_PACKET_CAPTURE_FOLDER = "pcap_files/packet_capture"
 
 # Initialize the objects
 monitor = PacketCapture()
@@ -19,7 +19,7 @@ class PcapUploadView(APIView):
     def post(self, request):
         # pcap_file also stores the pcap file data
         pcap_file = request.data.get('pcap_file')
-        full_path_pcap_file = os.path.join(PCAP_FOLDER, pcap_file.name)
+        full_path_pcap_file = os.path.join(PCAP_PACKET_CAPTURE_FOLDER, pcap_file.name)
         try:
             with open(full_path_pcap_file, 'wb') as f:
                 f.write(pcap_file.read())
@@ -42,7 +42,7 @@ class PcapOpenView(APIView):
         # If pcap file is None, read the pcap file from the host machine that is capturing (captured_{number_of_capture}.pcap)
         if pcap_file is None:
             pcap_file = CapturedPacket.objects.last().pcap_file
-            full_path_pcap_file = os.path.join(PCAP_FOLDER, pcap_file)
+            full_path_pcap_file = os.path.join(PCAP_PACKET_CAPTURE_FOLDER, pcap_file)
             if os.path.exists(full_path_pcap_file):
                 try:
                     monitor.pcap_file = full_path_pcap_file
@@ -56,7 +56,7 @@ class PcapOpenView(APIView):
                 return Response({'error': 'Pcap file not found.'})
         else:
             # If pcap file is not None, open it and read the packets
-            full_path_pcap_file = os.path.join(PCAP_FOLDER, pcap_file)
+            full_path_pcap_file = os.path.join(PCAP_PACKET_CAPTURE_FOLDER, pcap_file)
             try:
                 pcap_data = open(full_path_pcap_file, 'rb').read()
                 if not os.path.exists(full_path_pcap_file):
@@ -79,7 +79,7 @@ class PcapListView(APIView):
 class PcapDeleteView(APIView):
     def post(self, request):
         pcap_file = request.data.get('pcap_file')
-        full_path_pcap_file = os.path.join(PCAP_FOLDER, pcap_file)
+        full_path_pcap_file = os.path.join(PCAP_PACKET_CAPTURE_FOLDER, pcap_file)
         try:
             # remove the record from the database first
             CapturedPacket.objects.filter(pcap_file=pcap_file).delete()
@@ -104,7 +104,7 @@ class PcapCaptureView(APIView):
                 pcap_file="captured"+'_'+str(CapturedPacket.objects.count())+'.pcap',
                 status='unknown'
             )
-            full_path_pcap_file = os.path.join(PCAP_FOLDER, packet_capture.pcap_file)
+            full_path_pcap_file = os.path.join(PCAP_PACKET_CAPTURE_FOLDER, packet_capture.pcap_file)
             monitor.reset(interface=interface, filter_str=filter, pcap_file=full_path_pcap_file)
             if monitor.start_monitoring() == True:
                 return Response({'message': 'Packet capture started.'})

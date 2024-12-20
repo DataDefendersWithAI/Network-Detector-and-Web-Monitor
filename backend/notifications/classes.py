@@ -12,6 +12,7 @@ from web_service_mon.models import WebsiteResult
 from speedtest_mon.models import SpeedTest
 from ip_scanning.models import IPdatabase
 from packet_capture.models import CapturedPacket
+from traffic_analysis.models import TrafficAnalysisModel
 
 
 class DatabaseChangeDetector:
@@ -32,23 +33,47 @@ class DatabaseChangeDetector:
             scan_date__gt=self.last_checked_date)
         new_captured_packets = CapturedPacket.objects.filter(
             end_time__gt=self.last_checked_date)
+        new_traffic_analysis = TrafficAnalysisModel.objects.filter(
+            scan_at__gt=self.last_checked_date)
 
         if new_website_results.exists():
             Notification.objects.create(
-                message="New WebsiteResult detected", status="New")
+                message=f"Web service new result of {new_website_results.first().dest_ip}, status: {new_website_results.first().status_code}", 
+                status="New",
+                severity="info")
             self.send_notification("New WebsiteResult detected")
         if new_speed_tests.exists():
             Notification.objects.create(
-                message="New SpeedTest detected", status="New")
+                message=f"New speed test result: {new_speed_tests.first()}", 
+                status="New",
+                severity="info")
             self.send_notification("New SpeedTest detected")
         if new_ip_databases.exists():
             Notification.objects.create(
-                message="New IPdatabase entry detected", status="New")
+                message=f"New IP detected: {new_ip_databases.first().ip_address}", 
+                status="New",
+                severity="warning")
             self.send_notification("New IPdatabase entry detected")
         if new_captured_packets.exists():
             Notification.objects.create(
-                message="New CapturedPacket detected", status="New")
+                message=f"New packets captured {new_captured_packets.first().pcap_file}", 
+                status="New",
+                severity="warning")
             self.send_notification("New CapturedPacket detected")
+        if new_traffic_analysis.exists():
+            severity = "info"
+            if new_traffic_analysis.first().status == "clean":
+                severity = "good"
+            elif new_traffic_analysis.first().status == "unknown":
+                severity = "info"
+            elif new_traffic_analysis.first().status == "suspicious":
+                severity = "important"
+            
+            Notification.objects.create(
+                message=f"PCAP file analysis completed, {new_traffic_analysis.first().pcap_file} is {new_traffic_analysis.first().status}", 
+                status="New",
+                severity=severity)
+            self.send_notification("New TrafficAnalysisModel detected")
 
         LastChecked.objects.filter(id=1).update(
             last_checked_float=time.time(), 
@@ -64,11 +89,3 @@ class DatabaseChangeDetector:
                 "message": message
             }
         )
-
-# @receiver(post_save, sender=IPdatabase)
-# @receiver(post_save, sender=SpeedTest)
-# @receiver(post_save, sender=WebsiteResult)
-# @receiver(post_save, sender=CapturedPacket)
-# def notification_saved(sender, instance, **kwargs):
-#   detector = DatabaseChangeDetector()
-#   detector.check_for_changes()

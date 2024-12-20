@@ -6,6 +6,8 @@ class Notification(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     # status can be 'New', 'Read', or 'Dismissed'
     status = models.CharField(max_length=50)
+    # severity can be 'good' (green), 'info' (white), 'warning' (yellow), or 'important' (red)
+    severity = models.CharField(max_length=50, default='info')
 
     def __str__(self):
         return self.message

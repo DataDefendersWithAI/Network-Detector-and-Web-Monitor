@@ -13,6 +13,21 @@ const Notifications = () => {
     setIsNavOpen(!isNavOpen);
   };
 
+  const getSeverityClass = (severity) => {
+    switch (severity) {
+      case "good":
+        return "text-green-500";
+      case "warning":
+        return "text-yellow-500";
+      case "important":
+        return "text-red-500";
+      case "info":
+        return "text-blue-500";
+      default:
+        return "text-white";
+    }
+  };
+
   // Function to fetch notifications
   const fetchNotifications = async () => {
     try {
@@ -55,8 +70,11 @@ const Notifications = () => {
   useEffect(() => {
     fetchNotifications();
     const ws = new WebSocket("ws://localhost:3060/ws/notifications/");
-    ws.onmessage = (event) => {
+    ws.onmessage = () => {
       fetchNotifications();
+    };
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
     return () => ws.close();
   }, []);
@@ -70,7 +88,6 @@ const Notifications = () => {
         <Headerbar toggleNav={toggleNav} headerContent={"Notifications"} />
         <main className="p-6">
           <div className="bg-gray-800 rounded-lg p-4">
-            {/* Notification Section */}
             <div className="space-y-6">
               <div className="rounded-lg shadow">
                 <div className="flex justify-start items-center mb-4">
@@ -91,7 +108,7 @@ const Notifications = () => {
                   <tbody>
                     {notifications.map((notification) => (
                       <tr key={notification.id}>
-                        <td className="py-2 px-4">{notification.message}</td>
+                        <td className={"py-2 px-4 " + getSeverityClass(notification.severity)}>{notification.message}</td>
                         <td className="py-2 px-4">
                           {new Date(notification.date).toLocaleString()}
                         </td>
