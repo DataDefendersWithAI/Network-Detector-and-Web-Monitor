@@ -59,7 +59,7 @@ const TrafficAnalysis = () => {
     }
     
     setIsAnalyzing(true);
-    setAlertText("Analyzing file...");
+    setAlertText("Analyzing file... Check back in a few seconds.");
     setAlertColor("text-yellow-500");
     const formData = new FormData();
     formData.append("pcap_file", file);

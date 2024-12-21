@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncDisabled }) => {
   const [systemInfo, setSystemInfo] = useState(null);
-  
+
   const fetchSystemInfo = async () => {
     try {
       const res = await axios.get('http://localhost:3060/api/system/');
@@ -17,8 +17,11 @@ const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncD
     }
   }
 
+  // Fetch systemInfo when component is mounted and set up an interval to refresh it
   useEffect(() => {
     fetchSystemInfo();
+    const interval = setInterval(fetchSystemInfo, 5000); // Refresh every 5 seconds
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
   return (
