@@ -22,8 +22,8 @@ const App = () => {
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/speedtest" element={<InternetSpeedtest />} />
-        <Route path ="/ICMP" element={<ICMP />} />
-        <Route path="/event" element={<Event />} />
+        <Route path="/ICMP" element={<ICMP />} />
+        <Route path="/event" element={<Events />} />
         <Route path="/web-services/details" element={<WebsiteDetails/>} />
         <Route path="*" element={<h1>Not Found</h1>} />
         <Route path="/event" element={<Events />} />

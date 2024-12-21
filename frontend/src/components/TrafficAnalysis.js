@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Upload, CheckCircle, AlertTriangle } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useEffect } from "react";
 import Headerbar from "./Headerbar";
 import Sidebar from "./Sidebar";
@@ -59,7 +59,7 @@ const TrafficAnalysis = () => {
     }
     
     setIsAnalyzing(true);
-    setAlertText("Analyzing file...");
+    setAlertText("Analyzing file... Check back in a few seconds.");
     setAlertColor("text-yellow-500");
     const formData = new FormData();
     formData.append("pcap_file", file);

@@ -30,13 +30,14 @@ class PcapAnalysisView(APIView):
         traffic_analysis.debug = debug
         analysis_results = traffic_analysis.get_graph_results()
 
-        # Save results to database (also call notification when .save())
-        TrafficAnalysisModel.objects.create(
-            pcap_file=file_obj.name,
-            message=analysis_results['alert_text'],
-            status=analysis_results['status'],
-            scan_at=timezone.now()
-        )
+        if 'error' not in analysis_results:
+            # Save results to database (also call notification when .save())
+            TrafficAnalysisModel.objects.create(
+                pcap_file=file_obj.name,
+                message=analysis_results['alert_text'],
+                status=analysis_results['status'],
+                scan_at=timezone.now()
+            )
 
         return Response(analysis_results)
     

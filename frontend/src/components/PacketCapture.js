@@ -317,10 +317,10 @@ const PacketCapture = () => {
               <thead className="w-full">
                 <tr>
                   <th className="py-2 px-4">ID</th>
+                  <th className="py-2 px-4">File</th>
                   <th className="py-2 px-4">Interface</th>
                   <th className="py-2 px-4">Filter</th>
                   <th className="py-2 px-4">Date</th>
-                  <th className="py-2 px-4">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -331,10 +331,10 @@ const PacketCapture = () => {
                     className="p-2 bg-gray-700 rounded cursor-pointer hover:bg-gray-600"
                   >
                     <td className="py-2 px-4">{infos.id}</td>
+                    <td className="py-2 px-4">{infos.pcap_file}</td>
                     <td className="py-2 px-4">{infos.interface}</td>
                     <td className="py-2 px-4">{infos.filter_str}</td>
                     <td className="py-2 px-4">{infos.end_time? new Date(infos.end_time).toLocaleString() : 'unknown'}</td>
-                    <td className="py-2 px-4">{infos.status}</td>
                     <td className="py-2 px-4">
                       <button
                         onClick={(e) => {
