@@ -1,79 +1,14 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from scapy.all import sniff, wrpcap, PcapWriter, rdpcap
-from werkzeug.utils import secure_filename
-from colorama import Fore, Style
 import matplotlib.pyplot as plt
-from threading import Thread
+from scapy.all import rdpcap
 from scapy.all import *
 from io import BytesIO
 import networkx as nx
+import threading
 import torch
-import time
 import os
 
-OPENED_PCAP_FILE = "pcap_files/opened.pcap"
-CAPTURED_PCAP_FILE = "pcap_files/captured.pcap"
-PCAP_FOLDER = "pcap_files"
-
-class PacketCapture:
-    def __init__(self, interface=None, filter_str=None, pcap_file=None):
-        self.interface = interface
-        self.filter_str = filter_str
-        self.pcap_file = pcap_file
-        self.stop = False
-        self.packets = []
-        self.pcap_writer = PcapWriter(self.pcap_file, append=False, sync=True)
-
-    def packet_handler(self, packet):
-        self.packets.append(packet)
-        self.pcap_writer.write(packet)
-    
-    def reset(self):
-        self.__init__(self.interface, self.filter_str, self.pcap_file)
-
-    def start_monitoring(self):
-        if not self.interface:
-            print(f"{Fore.RED}Please specify a network interface to capture packets.{Style.RESET_ALL}")
-            return
-        print(f"{Fore.YELLOW}Starting packet capture on interface: {self.interface}, with filter: {self.filter_str if self.filter_str else 'No filter'}...{Style.RESET_ALL}")
-        self.sniff_thread = Thread(target=sniff, kwargs={
-            'iface': self.interface,
-            'filter': self.filter_str,
-            'prn': self.packet_handler,
-            'stop_filter': lambda x: self.stop
-        })
-        self.sniff_thread.start()
-
-    def stop_monitoring(self):
-        self.stop = True
-        print(f"{Fore.YELLOW}Stopping packet capture...{Style.RESET_ALL}")
-        self.pcap_writer.close()
-        print(f"{Fore.GREEN}Packet capture saved to {self.pcap_file}{Style.RESET_ALL}")
-        self.sniff_thread.join()
-
-    def find_packets(self, filter=None):
-        pkts = rdpcap(self.pcap_file) 
-        pkts_dict = {}
-        if filter == None or filter == "":
-            for i, pkt in enumerate(pkts):
-                pkts_dict[i + 1] = pkt
-            return pkts_dict
-        pkts_filtered = sniff(offline=pkts, filter=filter)
-        for i, pkt in enumerate(pkts_filtered):
-            pkts_dict[pkts.index(pkt) + 1] = pkt
-        return pkts_dict
-
-    def summary_packets(self, filtered_packets, packet_number=None):
-        if packet_number == None or packet_number == "":
-            return {k: v.summary() for k, v in filtered_packets.items()}
-        filtered_packets = filtered_packets[packet_number]
-        return filtered_packets.summary()
-
-    def show_packets(self, filtered_packets, packet_number=None):
-        if packet_number == None or packet_number == "":
-            return {k: v.show(dump=True) for k, v in filtered_packets.items()}
-        filtered_packets = filtered_packets[packet_number]
-        return filtered_packets.show(dump=True)
+PCAP_TRAFFIC_ANALYSIS_FOLDER = "pcap_files/traffic_analysis"
 
 class TrafficAnalysis:
     def __init__(self, file_path = None, filter = None, debug = False):
@@ -84,10 +19,17 @@ class TrafficAnalysis:
         self.debug = debug
         self.text_data = []
         self.packets_brief = {}
-        self.forward_packets = {}
-        self.backward_packets = {}
         self.protocols = []
         self.protocol_counts = {}
+        self.lock = threading.Lock()
+        self.running = False
+        self.runned = False
+        self.graphs = {
+            "graph1": "",
+            "graph2": "",
+            "graph3": "",
+            "graph4": ""
+        }
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.classes = [
             'Analysis',
@@ -284,38 +226,66 @@ class TrafficAnalysis:
         return encoded_image
 
 
-    def get_graph_results(self):
+    def get_graph_results(self, run_analysis=True):
         try:
-            self.packets_brief.clear()
+            with self.lock:
+                if run_analysis:
+                    self.packets_brief.clear()
+                    self.running = True
 
-            if len(self.filter) > 0:
-                self.predictingRowsCategoryOnGPU(self.file_path, self.filter.encode('utf-8'), False) # Will take care of saving data in packets_brief
+                    if len(self.filter) > 0:
+                        self.predictingRowsCategoryOnGPU(self.file_path, self.filter.encode('utf-8'), False) # Will take care of saving data in packets_brief
+                    else:
+                        self.predictingRowsCategoryOnGPU(self.file_path, b"", False) # Will take care of saving data in packets_brief
+
+                    # Generate first graph
+                    keys1 = list(self.packets_brief.keys())
+                    vals1 = list(self.packets_brief.values())
+                    self.graph1 = self.generate_graph(dict(zip(keys1, vals1)), 'Identified Known Attacks​', '#ef6666', "Attacks", "Number of Malicious Packets")
+
+                    # Generate Second graph
+                    keys2 = list(self.protocol_counts.keys())
+                    vals2 = list(self.protocol_counts.values())
+                    self.graph2 = self.generate_graph(dict(zip(keys2, vals2)), 'Identified Protocols​', '#341f97', "Protocols", "Number of Packets")
+
+                    # Generate Third graph
+                    self.graph3 = self.visualize_network_graph()
+
+                    # Generate Fourth graph
+                    self.graph4 = self.visualize_destination_ports_plot() # type: ignore
+
+                    # Ensure the graphs are stored in memory
+                    self.graphs = {
+                        "graph1": self.graph1,
+                        "graph2": self.graph2,
+                        "graph3": self.graph3,
+                        "graph4": self.graph4
+                    }
+
+                    self.running = False
+                    self.runned = True
+    
+            if len(self.packets_brief) == 0 and self.running == False and self.runned == True:
+                return {"graphs": self.graphs, 
+                        "status": "clean", 
+                        "alert_text": "No malicious traffic detected.",
+                        "file_name": self.file_name}
+            elif len(self.packets_brief) > 0 and self.running == False and self.runned == True:
+                return {"graphs": self.graphs, 
+                        "status":"suspicious", 
+                        "alert_text": "Potential malicious traffic detected.",
+                        "file_name": self.file_name}
+            elif self.running == True:
+                return {"graphs": self.graphs, 
+                        "status": "analyzing", 
+                        "alert_text": "Analyzing traffic...",
+                        "file_name": self.file_name}
+            # return blank graphs if nothing
             else:
-                self.predictingRowsCategoryOnGPU(self.file_path, b"", False) # Will take care of saving data in packets_brief
+                return {"graphs": self.graphs, 
+                        "status": "idle", 
+                        "alert_text": "",
+                        "file_name": self.file_name}
 
-            # Generate first graph
-            keys1 = list(self.packets_brief.keys())
-            vals1 = list(self.packets_brief.values())
-            graph1 = self.generate_graph(dict(zip(keys1, vals1)), 'Identified Known Attacks​', '#ef6666', "Attacks", "Number of Malicious Packets")
-
-            # Generate Second graph
-            keys2 = list(self.protocol_counts.keys())
-            vals2 = list(self.protocol_counts.values())
-            graph2 = self.generate_graph(dict(zip(keys2, vals2)), 'Identified Protocols​', '#341f97', "Protocols", "Number of Packets")
-
-            # Generate Third graph
-            graphh3 = self.visualize_network_graph()
-            # Generate Third graph
-
-            graphh3 = self.visualize_network_graph()
-
-            # Generate Fourth graph
-
-            graph4 = self.visualize_destination_ports_plot() # type: ignore
-
-            if len(self.packets_brief) == 0:
-                return {"graphs": {"graph1": graph1, "graph2": graph2, "graph3": graphh3, "graph4": graph4}, "alert_text": f"{self.file_name} is clean.", "alert_color": "text-green-500"}
-            else:
-                return {"graphs": {"graph1": graph1, "graph2": graph2, "graph3": graphh3, "graph4": graph4}, "alert_text": f"{self.file_name} contains malicious packets.", "alert_color": "text-red-500"}
         except Exception as e:
-            return {'error': str(e)}
+            return {"error": str(e)}

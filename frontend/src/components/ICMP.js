@@ -258,7 +258,7 @@ const ICMP = ({ onEventClick}) => {
         <div className="flex bg-gray-900 text-white min-h-screen ">
                 <Sidebar isNavOpen={isNavOpen}/>
                 <div className="flex-grow">
-                    <Headerbar toggleNav={toggleNav} />
+                    <Headerbar toggleNav={toggleNav} headerContent={"ICMP monitoring"}/>
                     <main className="p-6">
                         <div className="bg-gray-800 rounded-lg p-4">
                             <div className=" mb-4">

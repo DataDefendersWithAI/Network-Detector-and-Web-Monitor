@@ -400,7 +400,7 @@ const Events = ({ onEventClick }) => {
         <div className="flex bg-gray-900 text-white min-h-screen ">
             <Sidebar isNavOpen={isNavOpen}/>
             <div className="flex-grow">
-                <Headerbar toggleNav={toggleNav} />
+                <Headerbar toggleNav={toggleNav} headerContent={"Events tracking"}/>
                 <main className="p-6">
                     <div className="grid grid-cols-6 gap-4 mb-6">
                         <FilterButton label="All Devices" count={events.length } color="bg-teal-600" icon={ArrowUpDown} filter="all" />

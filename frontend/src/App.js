@@ -5,8 +5,12 @@ import DeviceDetails from './components/DeviceDetails';
 import WebServicesMonitor from './components/WebServicesMonitor';
 import PacketCapture from './components/PacketCapture';
 import TrafficAnalysis from './components/TrafficAnalysis';
-import Event from './components/event';
+import Notifications from './components/Notifications';
+import Events from './components/Events';
 import ICMP from './components/ICMP';
+import InternetSpeedtest from './components/InternetSpeedtest';
+import WebsiteDetails from './components/WebsiteDetails';
+
 const App = () => {
   return (
     <Router>
@@ -16,8 +20,13 @@ const App = () => {
         <Route path="/web-services" element={<WebServicesMonitor />} />
         <Route path="/package-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
-        <Route path ="/ICMP" element={<ICMP />} />
-        <Route path="/event" element={<Event />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/speedtest" element={<InternetSpeedtest />} />
+        <Route path="/ICMP" element={<ICMP />} />
+        <Route path="/event" element={<Events />} />
+        <Route path="/web-services/details" element={<WebsiteDetails/>} />
+        <Route path="*" element={<h1>Not Found</h1>} />
+        <Route path="/event" element={<Events />} />
       </Routes>
     </Router>
   );
