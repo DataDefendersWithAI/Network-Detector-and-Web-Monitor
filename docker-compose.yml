@@ -21,9 +21,9 @@ services:
     ports:
       - "3060:3060"
     network_mode: host
-    runtime: nvidia
+    #runtime: nvidia
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_VISIBLE_DEVICES=0
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       
     # depends_on:

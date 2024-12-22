@@ -1,6 +1,8 @@
 import requests
 from .models import Website, WebsiteResult
 from socket import gethostbyname
+import re
+import json
 
 def add_website(url, tag, monitor_all_events, monitor_down_events, dest_ip):
     """
@@ -17,6 +19,10 @@ def run_website_monitor(url_list = None):
     If website is down, status_code is 503 and latency is None.
     If monitor_all_events is True, monitor all events and store them in the database.
     If monitor_down_events is True, monitor only down events and store them in the database.
+
+    With each website, we will try:
+    + Get destination IP address by just using "xxx.xxx.xxx" from URL given
+    + Then we will send a GET request to the website URL, maybe including path and GET params
     """
     if url_list:
         # If url_list is provided, monitor only the websites in the list
@@ -27,18 +33,20 @@ def run_website_monitor(url_list = None):
     for website in websites:
         try:
             # Send a GET request to the website URL
-            # Try to add "http://" to the URL if it is not already there
             url = website.url
             if not url.startswith('http://') and not url.startswith('https://'):
                 url = 'http://' + url
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=15)
             status_code = response.status_code
             latency = response.elapsed.total_seconds()
-            # Try to remove "http://" from the URL to get hostname
-            if url.startswith('http://'):
-                hostname = url[7:]
-            elif url.startswith('https://'):
-                hostname = url[8:]
+            print('URL:', url, 'Status Code:', status_code, 'Latency:', latency)
+
+            # Extract hostname from URL using regex
+            match = re.match(r'^(?:http[s]?://)?([^:/\s]+)', url)
+            hostname = match.group(1) if match else url
+
+            print('Hostname:', hostname)
+
             dest_ip = gethostbyname(hostname)
             # Update the destination IP address in the database
             website.dest_ip = dest_ip

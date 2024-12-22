@@ -40,7 +40,7 @@ class WebsiteMonitorView(APIView):
                 run_website_monitor()
             return Response({'message': 'Website monitor completed.'})
         except Exception as e:
-            return Response({'error': "Something went wrong."})
+            return Response({'error': str(e)}, status=400)
             
     
 class AddWebsiteView(APIView):
@@ -82,7 +82,7 @@ class AddWebsiteView(APIView):
             dest_ip = request.data.get('dest_ip')
             add_website(url, tag, monitor_all_events, monitor_down_events, dest_ip)
         except Exception as e:
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)
         else:
             return Response({'message': f'Website added successfully with URL: {url}.'})
     def delete(self, request):
@@ -111,7 +111,7 @@ class AddWebsiteView(APIView):
             website.delete()
             return Response({'message': f'Website deleted successfully with URL: {url}.'})
         except Exception as e:
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)
             
     def put(self, request):
         """
@@ -146,9 +146,9 @@ class AddWebsiteView(APIView):
             note = request.data.get('note')
             # Check if url exists
             if url is None or url == '':
-                return Response({'error': 'URL is required.'})
+                return Response({'error': 'URL is required.'}, status=400)
             if not Website.objects.filter(url=url).exists():
-                return Response({'error': f'Website with URL: {url} does not exist.'})
+                return Response({'error': f'Website with URL: {url} does not exist.'}, status=400)
             # Destination IP is not editable, so check if dest_ip is the same
             if dest_ip is not None:
                 website = Website.objects.get(url=url)
@@ -163,7 +163,7 @@ class AddWebsiteView(APIView):
             website.save()
             return Response({'message': f'Website updated successfully with URL: {url}.'})
         except Exception as e:
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)
             
         
 class WebsiteHistoryView(APIView):

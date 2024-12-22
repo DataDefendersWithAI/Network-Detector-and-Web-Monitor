@@ -85,7 +85,7 @@ class ICMPScan(APIView):
             icmp_scan(ip)
             detail_ip = ICMPdatabase.objects.get(ip_address=ip)
             serializer = ICMPdatabaseSerializer(detail_ip)
-            return Response(serializer, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
     
 class ICMPList(APIView):
     """

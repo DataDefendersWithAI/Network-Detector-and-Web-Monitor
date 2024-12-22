@@ -10,7 +10,6 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime
 
 class IPList(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request):
         nmap_scan()
         ip = IPdatabase.objects.all()
@@ -18,7 +17,6 @@ class IPList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class IPDetail(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
@@ -45,7 +43,6 @@ class IPDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class IPEventDetail(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
@@ -56,7 +53,6 @@ class IPEventDetail(APIView):
         return Response(serializers.data, status=status.HTTP_200_OK)
 
 class CreateIP(APIView):
-    permission_classes = (AllowAny,)
     def post(self, request):
         serializer = IPdatabaseSerializer(data=request.data)
         if serializer.is_valid():
@@ -65,7 +61,6 @@ class CreateIP(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ChangeHost(APIView):
-    permission_classes = (AllowAny,)
     def post(self, request):
         new_host = request.data.get("host")
         if new_host:
@@ -76,7 +71,6 @@ class ChangeHost(APIView):
         
 
 class FastScanIP(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
@@ -88,7 +82,6 @@ class FastScanIP(APIView):
         return Response(ip_serializer.data,status=status.HTTP_200_OK)
 
 class FullScanIP(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
@@ -100,7 +93,6 @@ class FullScanIP(APIView):
         return Response(ip_serializer.data,status=status.HTTP_200_OK)
 
 class DefaultScanIP(APIView):
-    permission_classes = (AllowAny,)
     def get(self, request, pk):
         try:
             ip = IPdatabase.objects.get(id=pk)
