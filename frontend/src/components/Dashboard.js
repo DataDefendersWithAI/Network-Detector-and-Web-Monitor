@@ -3,25 +3,49 @@ import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, Chevr
 import '../App.css';
 import Sidebar from './Sidebar';
 import Headerbar from './Headerbar';
+import axios from 'axios';
 
 const DeviceDashboard = ({ onDeviceClick }) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
-  const [devices, setDevices] = useState([
-    { name: 'JakeClark-Sep21st', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '10.0.226.199', mac: '', status: 'new', connected: true, archived: false },
-    { name: 'Internet', owner: '(unknown)', type: '', favorite: true, group: '', firstSession: '2024-10-14 22:45', lastSession: '2024-10-14 22:45', lastIP: '125.235.239.73', mac: '', status: 'online', connected: true, archived: false },
-    { name: '(unknown)', owner: '(unknown)', type: '', favorite: false, group: '', firstSession: '2024-10-14 22:55', lastSession: '2024-10-14 22:55', lastIP: '192.168.76.21', mac: '', status: 'offline', connected: false, archived: false },
-  ]);
+  const [devices, setDevices] = useState([]); // Devices will be here
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [activeFilters, setActiveFilters] = useState([]);
+  const serverUrl = 'http://localhost:3060';
 
   const handleDeviceClick = (device) => {
-    if (onDeviceClick) {
-      onDeviceClick(device);
-    }
+    // if (onDeviceClick) {
+    //   onDeviceClick(device);
+    // }
   };
 
   const toggleNav = () => {
     setIsNavOpen(!isNavOpen);
+  };
+
+  const fetchDevices = async () => {
+    try {
+      const response = await axios.get(`${serverUrl}/api/ip/`);
+      setDevices(response.data);
+      console.log('Devices:', response.data);
+    } catch (error) {
+      console.error('Error fetching devices:', error);
+    }
+  };
+
+  const changeHost = async () => { 
+    try {
+      const newHost = document.querySelector('input').value;
+      console.log('New host:', newHost);
+      const response = axios.post(`${serverUrl}/api/ip/changehost`, {
+        host: newHost
+      });
+      console.log('Response:', response);
+      alert('Host changed successfully!');
+      fetchDevices();
+    }
+    catch (error) {
+      console.error('Error changing host:', error);
+    }
   };
 
   const sortData = (key) => {
@@ -44,11 +68,11 @@ const DeviceDashboard = ({ onDeviceClick }) => {
     if (activeFilters.length === 0) return true;
     return activeFilters.some(filter => {
       switch (filter) {
-        case 'connected': return device.connected;
-        case 'favorites': return device.favorite;
-        case 'new': return device.status === 'new';
-        case 'down-alerts': return device.status === 'offline';
-        case 'archived': return device.archived;
+        case 'is_active': return device.is_active;
+        // case 'favorites': return device.favorite;
+        // case 'new': return device.status === 'new';
+        // case 'down-alerts': return device.status === 'offline';
+        // case 'archived': return device.archived;
         default: return true;
       }
     });
@@ -102,6 +126,10 @@ const DeviceDashboard = ({ onDeviceClick }) => {
     }
   };
 
+  useEffect(() => {
+    fetchDevices();
+  }, []);
+
   return (
     <div className="flex bg-gray-900 text-white min-h-screen">
       <Sidebar isNavOpen={isNavOpen}/>
@@ -111,67 +139,66 @@ const DeviceDashboard = ({ onDeviceClick }) => {
         <main className="p-6">
           <div className="grid grid-cols-6 gap-4 mb-6">
             <FilterButton label="All Devices" count={devices.length} color="bg-teal-600" icon={ArrowUpDown} filter="all" />
-            <FilterButton label="Connected" count={devices.filter(d => d.connected).length} color="bg-green-700" icon={ArrowUpDown} filter="connected" />
-            <FilterButton label="Favorites" count={devices.filter(d => d.favorite).length} color="bg-yellow-600" icon={Star} filter="favorites" />
-            <FilterButton label="New Devices" count={devices.filter(d => d.status === 'new').length} color="bg-yellow-600" icon={PlusCircle} filter="new" />
-            <FilterButton label="Down Alerts" count={devices.filter(d => d.status === 'offline').length} color="bg-red-700" icon={AlertTriangle} filter="down-alerts" />
-            <FilterButton label="Archived" count={devices.filter(d => d.archived).length} color="bg-gray-600" icon={Archive} filter="archived" />
+            <FilterButton label="Connected" count={devices.filter(d => d.is_active == true).length} color="bg-green-700" icon={ArrowUpDown} filter="is_active" />
+            {/* <FilterButton label="Favorites" count={devices.filter(d => d.favorite).length} color="bg-yellow-600" icon={Star} filter="favorites" /> */}
+            {/* <FilterButton label="New Devices" count={devices.filter(d => d.status === 'new').length} color="bg-yellow-600" icon={PlusCircle} filter="new" /> */}
+            {/* <FilterButton label="Down Alerts" count={devices.filter(d => d.is_active == false).length} color="bg-red-700" icon={AlertTriangle} filter="down-alerts" /> */}
+            {/* <FilterButton label="Archived" count={devices.filter(d => d.archived).length} color="bg-gray-600" icon={Archive} filter="archived" /> */}
           </div>
 
           <div className="bg-gray-800 rounded-lg p-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">All Devices</h2>
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <span className="mr-2">Show</span>
                 <select className="bg-gray-700 text-white px-2 py-1 rounded">
                   <option>10</option>
                 </select>
                 <span className="ml-2">entries</span>
+              </div> */}
+              <div className="flex items-center">
+                <span className="mr-2">Change host</span>
+                <input type="text" className="bg-gray-700 text-white px-2 py-1 rounded" placeholder="192.168.1.0/24" />
+                <button className="bg-blue-500 text-white px-4 py-1 rounded ml-2" onClick={changeHost}>Change</button>
               </div>
             </div>
             <table className="w-full">
               <thead>
                 <tr className="text-left">
-                  <th>Name <SortButton column="name" /></th>
+                  {/* <th>Name <SortButton column="name" /></th>
                   <th>Owner <SortButton column="owner" /></th>
-                  <th>Type <SortButton column="type" /></th>
-                  <th>Favorite <SortButton column="favorite" /></th>
-                  <th>Group <SortButton column="group" /></th>
-                  <th>First Session <SortButton column="firstSession" /></th>
-                  <th>Last Session <SortButton column="lastSession" /></th>
-                  <th>Last IP <SortButton column="lastIP" /></th>
+                  <th>Type <SortButton column="type" /></th> */}
+                  <th>IP <SortButton column="lastIP" /></th>
                   <th>MAC <SortButton column="mac" /></th>
-                  <th>Status <SortButton column="status" /></th>
+                  <th>Last Scan Date<SortButton column="lastSession" /></th>
+                  <th>Open Port(s)</th>
+                  <th>Is Active?<SortButton column="status" /></th>
                 </tr>
               </thead>
               <tbody>
                 {sortedDevices.map((device, index) => (
-                  <tr key={index} className="hover:bg-gray-700 cursor-pointer" onClick={() => handleDeviceClick(device)}>
-                    <td className="py-2 text-blue-400">{device.name}</td>
-                    <td>{device.owner}</td>
-                    <td>{device.type}</td>
-                    <td>{device.favorite ? 'Yes' : 'No'}</td>
-                    <td>{device.group}</td>
-                    <td>{device.firstSession}</td>
-                    <td>{device.lastSession}</td>
-                    <td>{device.lastIP}</td>
-                    <td>{device.mac}</td>
-                    <td>
+                  <tr key={index} className="hover:bg-gray-700 cursor-pointer" onClick={() => window.location.href = `/device-details/?id=${device.id}`}>
+                    <td className="py-2 text-blue-400">{device.ip_address}</td>
+                    <td>{device.mac_address}</td>
+                    <td>{new Date(device.scan_date).toLocaleString("vi-VN")}</td>
+                    <td>{device.open_ports}</td>
+                    <td>{device.is_active? "Yes":"No"}</td>
+                    {/* <td>
                       <span className={`px-2 py-1 rounded ${getStatusStyle(device.status)}`}>
                         {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
                       </span>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="mt-4 text-sm">
-              Showing 1 to {sortedDevices.length} of {sortedDevices.length} entries
+              Showing {sortedDevices.length} entries
             </div>
           </div>
         </main>
         <footer className="p-4 text-center text-sm text-gray-500">
-          © 2024 JakeClark
+          © 2024 Not.Detector, J4ckP0t
         </footer>
       </div>
     </div>

@@ -14,7 +14,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<DeviceDashboard />} />
-        <Route path="/deviceDetails" element={<DeviceDetails />} />
+        <Route path="/device-details" element={<DeviceDetails />} />
         <Route path="/web-services" element={<WebServicesMonitor />} />
         <Route path="/package-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
