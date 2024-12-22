@@ -16,14 +16,14 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<DeviceDashboard />} />
-        <Route path="/deviceDetails" element={<DeviceDetails />} />
+        <Route path="/device-details" element={<DeviceDetails />} />
         <Route path="/web-services" element={<WebServicesMonitor />} />
         <Route path="/package-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/speedtest" element={<InternetSpeedtest />} />
-        <Route path ="/ICMP" element={<ICMP />} />
-        <Route path="/event" element={<Event />} />
+        <Route path="/ICMP" element={<ICMP />} />
+        <Route path="/event" element={<Events />} />
         <Route path="/web-services/details" element={<WebsiteDetails/>} />
         <Route path="*" element={<h1>Not Found</h1>} />
         <Route path="/event" element={<Events />} />

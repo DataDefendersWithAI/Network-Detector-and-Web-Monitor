@@ -11,5 +11,6 @@
     },
     "server": {
         "port": 3060
-    }
+    },
+    "web-monitor-timeout-sec": 15
 }

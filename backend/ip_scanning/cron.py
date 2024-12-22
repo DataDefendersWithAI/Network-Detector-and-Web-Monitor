@@ -59,7 +59,7 @@ def detect_device(vendor, mac):
 def os_detection(ip):
     nm = nmap.PortScanner()
     result = ""
-    scan_result = nm.scan(hosts=ip, arguments="-Pn -T4 --min-rate 3000 -O --osscan-guess", sudo=True)
+    scan_result = nm.scan(hosts=ip, arguments="-Pn -T4 --min-rate 3000 -O --osscan-guess")
     try:
         result = scan_result["scan"][ip]['osmatch'][0]['osclass'][0]['osfamily']
         return result
@@ -174,7 +174,7 @@ def real_time_scan(ip, mac, url_vendor):
                 ip_address=device_info.ip_address,
                 event_date=datetime.datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S"),
                 is_active=True,
-                additional_info=f"IP changed from {device_info.ip_address} to {ip}"
+                additional_info=f"IP changed to {ip}"
             )
             device_info.ip_address = ip
         if device_info.is_active == False:

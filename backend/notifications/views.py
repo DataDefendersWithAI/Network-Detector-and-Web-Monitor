@@ -42,3 +42,14 @@ class NotificationUpdateView(APIView):
             return Response({
                 'error': str(e)
             })
+
+class NewNotificationListView(APIView):
+    def get(self, request):
+        try:
+            return Response({
+                'new_notifications': Notification.objects.filter(status='New').count()
+            })
+        except Exception as e:
+            return Response({
+                'error': str(e)
+            })

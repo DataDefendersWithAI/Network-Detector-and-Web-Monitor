@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels', # add for websockets (notifications require this)
     'daphne', # add for ASGI
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,7 +50,8 @@ INSTALLED_APPS = [
     'packet_capture', # add for packet capture
     'traffic_analysis', # add for traffic analysis
     'notifications', # add for notifications
-    'channels', # add for websockets (notifications require this)
+    'devices', # add for devices
+    'system', # add for system
 ]
 
 ASGI_APPLICATION = 'backend.asgi.application'

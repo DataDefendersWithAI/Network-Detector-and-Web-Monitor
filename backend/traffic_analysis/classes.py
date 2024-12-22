@@ -275,10 +275,17 @@ class TrafficAnalysis:
                         "status":"suspicious", 
                         "alert_text": "Potential malicious traffic detected.",
                         "file_name": self.file_name}
+            elif self.running == True:
+                return {"graphs": self.graphs, 
+                        "status": "analyzing", 
+                        "alert_text": "Analyzing traffic...",
+                        "file_name": self.file_name}
+            # return blank graphs if nothing
             else:
                 return {"graphs": self.graphs, 
-                        "status": "error", 
-                        "alert_text": "An error occurred.",
+                        "status": "idle", 
+                        "alert_text": "",
                         "file_name": self.file_name}
+
         except Exception as e:
-            return {'error': str(e)}
+            return {"error": str(e)}

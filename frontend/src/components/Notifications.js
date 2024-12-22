@@ -116,7 +116,7 @@ const Notifications = () => {
                           {notification.status === "Read" ? (
                             <span className="text-green-500">Read</span>
                           ) : (
-                            <span className="text-yellow-500">Unread</span>
+                            <span className="text-yellow-500">New</span>
                           )}
                         </td>
                         <td className="py-2 px-4 flex space-x-2">
