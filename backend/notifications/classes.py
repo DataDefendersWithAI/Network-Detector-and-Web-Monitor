@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Notification, LastChecked
+from .models import Notification, LastChecked, LastCheckedIP
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.utils import timezone
@@ -18,10 +18,12 @@ from traffic_analysis.models import TrafficAnalysisModel
 
 class DatabaseChangeDetector:
     def __init__(self):
+        # Get the last checked record from the LastChecked table, if it doesn't exist, create it
         last_checked_record, created = LastChecked.objects.get_or_create(id=1, defaults={'last_checked_float': time.time(),
                                                                                          'last_checked_date': timezone.now()})
         if created:
             last_checked_record.save()
+
         self.last_checked_float = last_checked_record.last_checked_float
         self.last_checked_date = last_checked_record.last_checked_date
 
@@ -54,11 +56,15 @@ class DatabaseChangeDetector:
                 date=new_speed_tests.first().created_at)
             self.send_notification("New SpeedTest detected")
         if new_ip_databases.exists():
-            Notification.objects.create(
-                message=f"New IP detected: {new_ip_databases.first().ip_address}", 
-                status="New",
-                severity="warning",
-                date=new_ip_databases.first().scan_date)
+            for new_ip_database in new_ip_databases:
+                # Check if the IP address is already in the LastCheckedIP table
+                if not LastCheckedIP.objects.filter(ip_address=new_ip_database.ip_address).exists():
+                    Notification.objects.create(
+                        message=f"New IP entry: {new_ip_database.ip_address}",
+                        status="New",
+                        severity="warning",
+                        date=new_ip_database.scan_date)
+                # else nothing TODO: add a notification for the IP changed base on mac address
             self.send_notification("New IPdatabase entry detected")
         if new_icmp_monitorings.exists():
             Notification.objects.create(
@@ -90,12 +96,19 @@ class DatabaseChangeDetector:
                 date=new_traffic_analysis.first().scan_at)
             self.send_notification("New TrafficAnalysisModel detected")
 
+        # Send the number of new notifications to the frontend
         self.send_new_notification(Notification.objects.filter(status="New").count())
-        
+
+        # Update the LastChecked table
         LastChecked.objects.filter(id=1).update(
             last_checked_float=time.time(), 
             last_checked_date=timezone.now()
         )
+
+        # Update the LastCheckedIP table
+        # LastCheckedIP.objects.all().delete()
+        for new_ip_database in new_ip_databases:
+            LastCheckedIP.objects.get_or_create(id=1, ip_address=new_ip_database.ip_address)
 
     def send_notification(self, message):
         channel_layer = get_channel_layer()
