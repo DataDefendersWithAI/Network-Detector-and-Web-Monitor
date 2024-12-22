@@ -11,6 +11,7 @@ sys.path.append('../')
 from web_service_mon.models import WebsiteResult
 from speedtest_mon.models import SpeedTest
 from ip_scanning.models import IPdatabase
+from icmp_monitoring.models import ICMPdatabase
 from packet_capture.models import CapturedPacket
 from traffic_analysis.models import TrafficAnalysisModel
 
@@ -30,6 +31,8 @@ class DatabaseChangeDetector:
         new_speed_tests = SpeedTest.objects.filter(
             created_at__gt=self.last_checked_date)
         new_ip_databases = IPdatabase.objects.filter(
+            scan_date__gt=self.last_checked_date)
+        new_icmp_monitorings = ICMPdatabase.objects.filter(
             scan_date__gt=self.last_checked_date)
         new_captured_packets = CapturedPacket.objects.filter(
             end_time__gt=self.last_checked_date)
@@ -57,6 +60,13 @@ class DatabaseChangeDetector:
                 severity="warning",
                 date=new_ip_databases.first().scan_date)
             self.send_notification("New IPdatabase entry detected")
+        if new_icmp_monitorings.exists():
+            Notification.objects.create(
+                message=f"New ICMP monitoring result: {new_icmp_monitorings.first()}", 
+                status="New",
+                severity="info",
+                date=new_icmp_monitorings.first().scan_date)
+            self.send_notification("New ICMPdatabase entry detected")
         if new_captured_packets.exists():
             Notification.objects.create(
                 message=f"New packets captured {new_captured_packets.first().pcap_file}", 
@@ -80,6 +90,8 @@ class DatabaseChangeDetector:
                 date=new_traffic_analysis.first().scan_at)
             self.send_notification("New TrafficAnalysisModel detected")
 
+        self.send_new_notification(Notification.objects.filter(status="New").count())
+        
         LastChecked.objects.filter(id=1).update(
             last_checked_float=time.time(), 
             last_checked_date=timezone.now()
@@ -92,5 +104,15 @@ class DatabaseChangeDetector:
             {
                 "type": "send_notification",
                 "message": message
+            }
+        )
+    
+    def send_new_notification(self, count):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "new_notifications",
+            {
+                "type": "send_new_notification",
+                "count": count
             }
         )
