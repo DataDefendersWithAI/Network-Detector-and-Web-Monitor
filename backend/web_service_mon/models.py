@@ -7,7 +7,7 @@ class Website(models.Model):
     monitor_all_events = models.BooleanField(default=False)
     monitor_down_events = models.BooleanField(default=False)
     dest_ip = models.GenericIPAddressField(null=True, default=None) # Destination IP address, default is None
-    note = models.CharField(max_length=100, blank=True)
+    note = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.tag
