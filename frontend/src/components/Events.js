@@ -433,7 +433,7 @@ const Events = ({ onEventClick }) => {
     // -------------------------------------------------------------------------------------------------------
     
     return (
-        <div className="flex bg-gray-900 text-white min-h-screen ">
+        <div className="flex  bg-gray-900 text-white min-h-screen ">
             <Sidebar isNavOpen={isNavOpen}/>
             <div className="flex-grow">
                 <Headerbar toggleNav={toggleNav} headerContent={"Events tracking"}/>
