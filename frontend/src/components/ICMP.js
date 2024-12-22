@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, ChevronDown,CircleAlert,LucidePlugZap2 } from 'lucide-react';
+import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, ChevronDown,CircleAlert,LucidePlugZap2,Trash2 } from 'lucide-react';
 import '../App.css'
 import Sidebar from './Sidebar';
 import Headerbar from './Headerbar';
@@ -33,7 +33,8 @@ const ICMP = ({ onEventClick}) => {
                 const postdata = {
                      ip : scanquery
                     } ;
-                const response = await axios.post('http://localhost:3060/api/icmp_scan',  postdata);
+                    console.log(postdata);
+                const response = await axios.post('http://localhost:3060/api/icmp_scan',postdata);
                 if (response.status === 200) {
                     // After posting, reload the data
                     await fetchICMPData(); // Fetch the new data after POST
@@ -48,7 +49,25 @@ const ICMP = ({ onEventClick}) => {
             
 
             
-        }
+        };
+        const handleDelete = async (id) => {
+            try {
+                setLoading(true);
+            const response = await axios.delete(`http://localhost:3060/api/icmp_detail/${id}`);
+            if (response.status === 200) {
+                // After deleting, reload the data
+                await fetchICMPData(); // Fetch the new data after DELETE
+                window.location.reload(); // Reload the page
+            } else {
+                throw new Error('Failed to delete data');
+            }
+            setLoading(false);
+            } catch (error) {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+            fetchICMPData();
+            }
+        };
         
     useEffect(() => {
         fetchICMPData();
@@ -146,17 +165,14 @@ const ICMP = ({ onEventClick}) => {
           case false: return 'bg-red-500 text-white';
         }
     };
-    const handleInputChange = (e) => {
+    const handleInputChange = (e) => {  
         const { name, value } = e.target;
         const regex = /[^\w.\-_]/;
-        const regex2 = /^[0-9.]+$/;
-
         if (value === null || value === undefined || regex.test(value)  ) return;
         if (name === 'searchQuery') setSearchQuery(value);
         if (name === 'scanquery') {
-            if (regex2.test(value) ) return;
             const parts = value.split('.');
-            if (parts.length !== 4) return;
+            if (parts.length > 4) return;
             if (parts.some(part => parseInt(part) > 255 || parseInt(part) < 0) ) return;
             setScanQuery(value);
         }
@@ -182,6 +198,8 @@ const ICMP = ({ onEventClick}) => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
     };
 
+    
+    
 
     const renderPagination = () => {
         const pages = [];
@@ -326,7 +344,7 @@ const ICMP = ({ onEventClick}) => {
                                     <h2 className='mr-24  mb-4'> ICMP scanning IP :</h2>
                                     <div className='flex items-center '>
                                         
-                                        <input  type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2" name="scanquery"   onChange={handleInputChange}  />
+                                        <input  type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2" name="scanquery"  value={scanquery}  onChange={handleInputChange}  />
                                         <button className='ml-3 bg-gray-700 text-white px-2 py-1 rounded' onClick={handlepostandreload}  disabled={loading} >Search</button>
                                     </div>
                                 </div>
@@ -364,6 +382,16 @@ const ICMP = ({ onEventClick}) => {
                                                     <td>{scan.min_rtt}</td>
                                                     <td>{scan.max_rtt}</td>
                                                     <td>{scan.avg_rtt}</td>
+                                                    <td>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Ngăn không cho kích hoạt handleEventClick
+                                                            handleDelete(scan.id);
+                                                        }}
+                                                        className="flex justify-center w-8 h-8 mr-2text-white bg-red-500 rounded hover:bg-red-600">
+                                                        <Trash2 className="w-5 h-5 mt-1 " />
+                                                    </button>
+                                                     </td>                                   
                                                 </tr>
                                             ))}
                                         </tbody>
