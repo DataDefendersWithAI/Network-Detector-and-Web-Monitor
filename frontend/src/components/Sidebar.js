@@ -31,7 +31,7 @@ const Sidebar = ({ isNavOpen }) => {
     const fetchNewNotifications = async () => {
       try {
         const response = await axios.get("http://localhost:3060/api/new-notifications/");
-        setNewCount(response.data.new_notifications);
+        setNewCount(response.data.count);
       } catch (error) {
         console.error("Failed to fetch new notifications:", error);
       }
