@@ -1,35 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpDown, Star, PlusCircle, AlertTriangle, Archive, ChevronUp, ChevronDown,CircleAlert,LucidePlugZap2 } from 'lucide-react';
 import '../App.css'
+import axios from "axios";
 import Sidebar from './Sidebar';
 import Headerbar from './Headerbar';
 
 const Events = ({ onEventClick }) => {
+
+    const fetchdevicedata = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('http://localhost:3060/api/ip/');
+            const device = response.data
+            setDevices(device);
+            const eventPromises = device.map((device) =>
+                axios
+                   .get(`http://localhost:3060/api/ip/${device.id}/events`)
+                   .then((reseventResponseonse) => 
+                    reseventResponseonse.data.map((event) => ({
+                        ...event,          // Dữ liệu sự kiện
+                        vendor: device.vendor // Thêm `vendor` từ API đầu tiên
+                      }))
+                    
+                    )
+                );
+            const enrichedEvents = await Promise.all(eventPromises);
+            const flattenedEvents = enrichedEvents.flat();
+            console.log(enrichedEvents);
+            setEvents(flattenedEvents);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+        } 
+        };
+
+        useEffect(() => {
+            fetchdevicedata();
+            }, []);   
+
+
+
+
+
     const [isNavOpen, setIsNavOpen] = useState(true);
     const [selectedValue, setSelectedValue] = useState(10);
-    const [currebtPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 5; 
-    const [selectedItem, setSelectedItem] = useState('name');
+    const [selectedItem, setSelectedItem] = useState('None');
     const [searchQuery, setSearchQuery] = useState('');
-    const [events, setEvents] = useState([
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: 'Alan', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sepst', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sepst', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2024-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-        { name: 'JakeClark-Sep21st', owner: '(unknown)', Date: '2023-10-14 14:30',Eventtype: 'voided sesstion', IP: '10.0.226.199',Status : 'new', connected: true},
-    ]);
+    const [events, setEvents] = useState([]);
+    const [devices, setDevices] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    console.log("events",events.length);
+    // example data  events
+
+   
+
+
+
+
 
     
 
@@ -93,9 +124,8 @@ const Events = ({ onEventClick }) => {
             if (!activeFilters) return true;
         switch (activeFilters) {
             // - Filter by event type and status (ask for more case if you need)
-            case 'connected': return event.connected; 
-            case 'new': return event.Status === 'new';
-            case 'down-alerts': return event.Status === 'offline';
+            case 'connected': return event.is_active === true;
+            case 'down-alerts': return event.is_active === false;
             default: return true;
         }
         }
@@ -116,15 +146,11 @@ const Events = ({ onEventClick }) => {
                     // - Filter by event type and status (ask for more case if you need)
                     case 'connected': 
                     {
-                        return event.connected[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
-                    } 
-                    case 'new': 
-                    {
-                        return (event.Status === 'new')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                        return (event.is_active === true )[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
                     }
                     case 'down-alerts': 
                     {
-                        return (event.Status === 'offline')[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
+                        return (event.is_active === false )[selectedItem]?.toLowerCase().includes(searchQuery.toLowerCase());
                     }
                     default: 
                     {
@@ -135,6 +161,7 @@ const Events = ({ onEventClick }) => {
         }
         }
     });
+    console.log("filteredEvents",filteredEvents.length);
 
    
 
@@ -155,6 +182,7 @@ const Events = ({ onEventClick }) => {
         }
         return sortableEvents;
     }, [filteredEvents, sortConfig]);
+    console.log("sortedevent",sortedEvents);
 
     const SortButton = ({ column }) => (
         <button onClick={() => sortData(column)} className="ml-1 focus:outline-none">
@@ -192,20 +220,23 @@ const Events = ({ onEventClick }) => {
 
         // lấy danh sách cách items sẽ xuất hiện trên trang 
         const paginatedEvents = React.useMemo(() => {
-            const startIndex = (currebtPage - 1) * ITEMS_PER_PAGE;
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
             const endIndex = startIndex + ITEMS_PER_PAGE;
             return sortedEvents.slice(startIndex, endIndex);
-        }, [sortedEvents, currebtPage]);
+            
+        }, [sortedEvents, currentPage]);
+       // Check if it's 126
+
         
         // Tính tổng số trang
         const totalPages = Math.ceil(Math.min(sortedEvents.length,selectedValue) / ITEMS_PER_PAGE);
 
         const handleNextPage = () => {
-            if (currebtPage < totalPages) setCurrentPage(currebtPage + 1);
+            if (currentPage < totalPages) setCurrentPage(currentPage + 1);
         };
 
         const handlePreviousPage = () => {
-            if (currebtPage > 1) setCurrentPage(currebtPage - 1);
+            if (currentPage > 1) setCurrentPage(currentPage - 1);
         };
 
         // Tạo nút phân trang
@@ -214,23 +245,23 @@ const Events = ({ onEventClick }) => {
         // if (paginationContainer) {
         //     const fragment = document.createDocumentFragment(); // DOM ảo
         //     paginationContainer.innerHTML = '';
-        //     if (currebtPage + 5 >= totalPages) {
+        //     if (currentPage + 5 >= totalPages) {
         //         if( totalPages <= 5) {
         //             for (let i = 1; i <= totalPages; i++) {
-        //                 const button = createPaginationButton(i, currebtPage);
+        //                 const button = createPaginationButton(i, currentPage);
         //                 fragment.appendChild(button);
         //             }
         //         }
         //         else {
-        //             if(totalPages - currebtPage > 4 )
+        //             if(totalPages - currentPage > 4 )
         //             {
         //                 for (let i = totalPages - 5; i <= totalPages; i++) {
-        //                     const button = createPaginationButton(i, currebtPage);
+        //                     const button = createPaginationButton(i, currentPage);
         //                     fragment.appendChild(button);
         //                 }
         //             }
         //             else {
-        //                 const a = totalPages - currebtPage;
+        //                 const a = totalPages - currentPage;
         //                 for (let i = totalPages - a; i <= totalPages; i++) {
         //                     if(i === totalPages - a)
         //                     {
@@ -238,12 +269,12 @@ const Events = ({ onEventClick }) => {
         //                         dots.textContent = "...";
         //                         dots.className = "ml-1";
         //                         fragment.appendChild(dots);
-        //                         const button = createPaginationButton(i, currebtPage);
+        //                         const button = createPaginationButton(i, currentPage);
         //                         fragment.appendChild(button);
         //                     }
         //                     else
         //                     {
-        //                     const button = createPaginationButton(i, currebtPage);
+        //                     const button = createPaginationButton(i, currentPage);
         //                     fragment.appendChild(button);
         //                     }
         //                 }
@@ -252,15 +283,15 @@ const Events = ({ onEventClick }) => {
         //     }
         //     else 
         //     {
-        //         for(let i = currebtPage; i <= currebtPage + 5; i++) {
-        //             if ( i!= currebtPage +2 )
+        //         for(let i = currentPage; i <= currentPage + 5; i++) {
+        //             if ( i!= currentPage +2 )
         //             {
-        //                 const button = createPaginationButton(i, currebtPage);
+        //                 const button = createPaginationButton(i, currentPage);
         //                 fragment.appendChild(button);
         //             }
         //             else 
         //             {   
-        //                 const button = createPaginationButton(i, currebtPage);
+        //                 const button = createPaginationButton(i, currentPage);
         //                 fragment.appendChild(button);
 
         //                 const dots = document.createElement("span");
@@ -284,14 +315,14 @@ const Events = ({ onEventClick }) => {
         // 
         const renderPagination = () => {
             const pages = [];
-            if (currebtPage + 5 >= totalPages) {
+            if (currentPage + 5 >= totalPages) {
                 if( totalPages <= 5) {
                     for (let i = 1; i <= totalPages; i++) {
                         pages.push(
                             <button
                                 onClick={() => setCurrentPage(i)}
                                 className={`px-2 py-1 rounded ml-1 w-8 ${
-                                    currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                    currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                 }`}
                             >
                                 {i}
@@ -300,14 +331,14 @@ const Events = ({ onEventClick }) => {
                     }
                 }
                 else {
-                    if(totalPages - currebtPage > 4 )
+                    if(totalPages - currentPage > 4 )
                     {
                         for (let i = totalPages - 5; i <= totalPages; i++) {
                             pages.push(
                                 <button
                                     onClick={() => setCurrentPage(i)}
                                     className={`px-2 py-1 rounded ml-1 w-8 ${
-                                        currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                        currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                     }`}
                                 >
                                     {i}
@@ -316,7 +347,7 @@ const Events = ({ onEventClick }) => {
                         }
                     }
                     else {
-                        const a = totalPages - currebtPage;
+                        const a = totalPages - currentPage;
                         for (let i = totalPages - a; i <= totalPages; i++) {
                             if(i === totalPages - a)
                             {   
@@ -328,7 +359,7 @@ const Events = ({ onEventClick }) => {
                                         
                                         onClick={() => setCurrentPage(i)}
                                         className={`px-2 py-1 rounded ml-1 w-8 ${
-                                            currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                            currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                         }`}
                                     >
                                         {i}
@@ -342,7 +373,7 @@ const Events = ({ onEventClick }) => {
                                        
                                         onClick={() => setCurrentPage(i)}
                                         className={`px-2 py-1 rounded ml-1 w-8 ${
-                                            currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                            currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                         }`}
                                     >
                                         {i}
@@ -355,15 +386,15 @@ const Events = ({ onEventClick }) => {
             }
             else 
             {
-                for(let i = currebtPage; i <= currebtPage + 5; i++) {
-                    if ( i!== currebtPage +2 )
+                for(let i = currentPage; i <= currentPage + 5; i++) {
+                    if ( i!== currentPage +2 )
                     {
                         pages.push(
                             <button
                                 
                                 onClick={() => setCurrentPage(i)}
                                 className={`px-2 py-1 rounded ml-1 w-8 ${
-                                    currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                    currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                 }`}
                             >
                                 {i}
@@ -377,7 +408,7 @@ const Events = ({ onEventClick }) => {
                                 
                                 onClick={() => setCurrentPage(i)}
                                 className={`px-2 py-1 rounded ml-1 w-8 ${
-                                    currebtPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
+                                    currentPage === i ? 'bg-gray-500 text-white' : 'bg-gray-700 text-white'
                                 }`}
                             >
                                 {i}
@@ -391,7 +422,12 @@ const Events = ({ onEventClick }) => {
             }
             return pages;
         };
-
+        const getStatusStyle = (status) => {
+            switch (status) {
+              case true: return 'bg-green-500 text-white';
+              case false: return 'bg-red-500 text-white';
+            }
+        };
 
 
     // -------------------------------------------------------------------------------------------------------
@@ -403,12 +439,17 @@ const Events = ({ onEventClick }) => {
                 <Headerbar toggleNav={toggleNav} headerContent={"Events tracking"}/>
                 <main className="p-6">
                     <div className="grid grid-cols-6 gap-4 mb-6">
-                        <FilterButton label="All Devices" count={events.length } color="bg-teal-600" icon={ArrowUpDown} filter="all" />
-                        <FilterButton label="Conected" count={events.filter(d => d.connected).length } color="bg-green-700" icon={LucidePlugZap2} filter="voided session" />
-                        <FilterButton label="New Devices" count={events.filter(d => d.Status === 'new').length } color="bg-yellow-600" icon={PlusCircle} filter="new"  />
-                        <FilterButton label="Down Alerts" count={events.filter(d => d.Status === 'offline').length } color="bg-red-700" icon={AlertTriangle} filter="down-alerts"  /> 
+                        <FilterButton label="All Devices" count={devices.length } color="bg-teal-600" icon={ArrowUpDown} filter="all" />
+                        <FilterButton label="Conected" count={devices.filter(d => d.is_active).length } color="bg-green-700" icon={LucidePlugZap2} filter=" Conected" />
+                        <FilterButton label="Down Alerts" count={events.filter(d => !d.is_active).length } color="bg-red-700" icon={AlertTriangle} filter="down-alerts"  /> 
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    {loading ? (
+                                <div className="loading-screen">
+                                    <p>Data is being updated, please wait...</p>
+                                </div>
+                                ) :
+                                (
+                                    <div className="bg-gray-800 rounded-lg p-4">
                         <div className="grid grid-cols-2 gap-2 justify-between mb-4">
 
                             <h2 className="text-xl font-bold">All Devices</h2>
@@ -430,10 +471,9 @@ const Events = ({ onEventClick }) => {
                                 <select className="bg-gray-700 text-white px-2 py-1 rounded mr-2" value={selectedItem}
                                 onChange={(e) => setSelectedItem(e.target.value)}>
                                     <option value={''}      >None</option>
-                                    <option value={'name'}  >name</option>
-                                    <option value={'owner'} >owner</option>
-                                    <option value={'Date'}  >Date</option>
-                                    <option value={'IP'}    >IP</option>
+                                    <option value={'vendor'}  >name</option>
+                                    <option value={'event_date'}  >Date</option>
+                                    <option value={'ip_address'}    >IP</option>
                                 </select>
                                 <input type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2"value={searchQuery} onChange={handleInputChange} />
                             </div>
@@ -445,7 +485,7 @@ const Events = ({ onEventClick }) => {
                                     <th className="text-left">Name<SortButton column="name" /></th>
                                     <th className="text-left">Owner<SortButton column="owner" /></th>
                                     <th className="text-left">Date<SortButton column="Date" /></th>
-                                    <th className="text-left">Eventtype<SortButton column="Event type" /></th>
+                                    <th className="text-left">Infor<SortButton column="Infor" /></th>
                                     <th className="text-left">IP<SortButton column="IP" /></th>
                                     <th className="text-left">Status<SortButton column="Status" /></th>
                                 </tr>
@@ -453,12 +493,16 @@ const Events = ({ onEventClick }) => {
                             <tbody>
                                 {paginatedEvents.slice(0,Math.min(selectedValue,paginatedEvents.length)).map((event, index) => (
                                     <tr key={index} className="hover:bg-gray-700 cursor-pointer" onClick={() => handleEventClick(event)} >
-                                        <td className="py-2 text-blue-400"  >{event.name}</td>
-                                        <td>{event.owner}</td>
-                                        <td>{event.Date}</td>
-                                        <td>{event.Eventtype}</td>
-                                        <td>{event.IP}</td>
-                                        <td>{event.Status}</td>
+                                        <td className="py-2 text-blue-400"  >{event.vendor === "" || event.vendor === "Unknown"  ? "Unknown" : event.vendor }</td>
+                                        <td>UnKnow</td>
+                                        <td>{new Date(event.event_date).toLocaleString("vi-VN")}</td>
+                                        <td>{event.additional_info}</td>
+                                        <td>{event.ip_address}</td>
+                                        <td>
+                                            <span className={`px-2 py-1 rounded ${getStatusStyle(event.is_active)}`}>
+                                                        {event.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -476,7 +520,10 @@ const Events = ({ onEventClick }) => {
                             </div>
                         </div>
                        
-                    </div>         
+                    </div>
+                                )
+                                }
+                             
                 </main>
             </div>
         </div>

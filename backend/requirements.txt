@@ -1,6 +1,7 @@
 django-rest-framework
 django-cors-headers
 channels[daphne]
+channels
 django-crontab
 speedtest-cli
 transformers

@@ -5,7 +5,7 @@ FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 WORKDIR /usr/src/app
 
 # Install Python and other dependencies
-RUN apt update && apt install -y python3 python3-pip python-is-python3 libpcap0.8-dev tcpdump iproute2
+RUN apt update && apt install -y python3 python3-pip python-is-python3 libpcap0.8-dev tcpdump iproute2 nmap
 
 # Install Django
 RUN pip3 install django
