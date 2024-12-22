@@ -80,10 +80,6 @@ class DatabaseChangeDetector:
                 date=new_traffic_analysis.first().scan_at)
             self.send_notification("New TrafficAnalysisModel detected")
 
-
-        new_notifications_count = Notification.objects.filter(status="New").count()
-        self.send_new_notification_count(new_notifications_count)
-
         LastChecked.objects.filter(id=1).update(
             last_checked_float=time.time(), 
             last_checked_date=timezone.now()
@@ -96,15 +92,5 @@ class DatabaseChangeDetector:
             {
                 "type": "send_notification",
                 "message": message
-            }
-        )
-
-    def send_new_notification_count(self, message):
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            "new_notifications",
-            {
-                "type": "send_new_notification",
-                "count": message
             }
         )
