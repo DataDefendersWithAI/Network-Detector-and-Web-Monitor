@@ -16,6 +16,12 @@ class Notification(models.Model):
 class LastChecked(models.Model):
     last_checked_float = models.FloatField()
     last_checked_date = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.last_checked_float
+
+class LastCheckedIP(models.Model):
+    ip_address = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.IP_address

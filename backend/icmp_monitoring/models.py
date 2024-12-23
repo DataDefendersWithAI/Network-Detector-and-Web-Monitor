@@ -19,3 +19,6 @@ class ICMPdatabase(models.Model):
     max_rtt = models.FloatField(null=True)
     min_rtt = models.FloatField(null=True)
     avg_rtt = models.FloatField(null=True)
+
+    def __str__(self):
+        return f"{self.ip_address} - {self.is_active}"

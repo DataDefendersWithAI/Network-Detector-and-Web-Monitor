@@ -47,7 +47,7 @@ class NewNotificationListView(APIView):
     def get(self, request):
         try:
             return Response({
-                'new_notifications': Notification.objects.filter(status='New').count()
+                'count': Notification.objects.filter(status='New').count()
             })
         except Exception as e:
             return Response({

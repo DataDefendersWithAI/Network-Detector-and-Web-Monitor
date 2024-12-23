@@ -10,7 +10,7 @@ const Headerbar = ({ toggleNav, headerContent, syncCallback, backCallback, syncD
   const fetchSystemInfo = async () => {
     try {
       const res = await axios.get('http://localhost:3060/api/system/');
-      console.log(res.data);
+      // console.log(res.data);
       setSystemInfo(res.data);
     } catch (err) {
       console.error(err);
