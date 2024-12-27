@@ -42,10 +42,11 @@ class DatabaseChangeDetector:
             scan_at__gt=self.last_checked_date)
 
         if new_website_results.exists():
+            severity = "info" if new_website_results.first().status_code == 200 else "warning"
             Notification.objects.create(
                 message=f"Web service new result of {new_website_results.first().website.url}, status: {new_website_results.first().status_code}", 
                 status="New",
-                severity="info",
+                severity=severity,
                 date=new_website_results.first().created_at)
             self.send_notification("New WebsiteResult detected")
         if new_speed_tests.exists():
