@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .classes import run_speed_test
 
+import concurrent.futures
 from .models import SpeedTest
 import re
 
@@ -12,15 +13,19 @@ class SpeedTestView(APIView):
     def get(self, request):
         # Get GET parameters "action" to check if the user wants to list all speed tests or delete
         # If list is None, run a new speed test
-        try:
-            download_speed, upload_speed, ping = run_speed_test()  
-            return Response({
-                'download_speed': round(download_speed, 2),
-                'upload_speed': round(upload_speed, 2),
-                'ping': ping
-            })
-        except Exception as e:
-            return Response({'error': str(e)}, status=500)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(run_speed_test)
+            try:
+                download_speed, upload_speed, ping = future.result()
+                return Response({
+                    'download_speed': round(download_speed, 2),
+                    'upload_speed': round(upload_speed, 2),
+                    'ping': ping
+                })
+            except concurrent.futures.TimeoutError:
+                return Response({'error': 'Speed test took too long.'}, status=500)
+            except Exception as e:
+                return Response({'error': str(e)}, status=500)
     def delete(self, request):
         date_delete = request.query_params.get('date')
         # date_delete like this: 2024-11-15T10:28:28.953333Z/
