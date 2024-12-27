@@ -42,10 +42,11 @@ class DatabaseChangeDetector:
             scan_at__gt=self.last_checked_date)
 
         if new_website_results.exists():
+            severity = "info" if new_website_results.first().status_code == 200 else "warning"
             Notification.objects.create(
                 message=f"Web service new result of {new_website_results.first().website.url}, status: {new_website_results.first().status_code}", 
                 status="New",
-                severity="info",
+                severity=severity,
                 date=new_website_results.first().created_at)
             self.send_notification("New WebsiteResult detected")
         if new_speed_tests.exists():
@@ -67,11 +68,24 @@ class DatabaseChangeDetector:
                 # else nothing TODO: add a notification for the IP changed base on mac address
             self.send_notification("New IPdatabase entry detected")
         if new_icmp_monitorings.exists():
-            Notification.objects.create(
-                message=f"New ICMP monitoring result: {new_icmp_monitorings.first()}", 
-                status="New",
-                severity="info",
-                date=new_icmp_monitorings.first().scan_date)
+            for new_icmp_monitoring in new_icmp_monitorings:
+                if new_icmp_monitoring.is_active:
+                    severity = "good"
+                    if new_icmp_monitoring.avg_rtt > 100:
+                        severity = "warning"
+                    elif new_icmp_monitoring.avg_rtt > 200:
+                        severity = "important"
+                    Notification.objects.create(
+                        message=f"New ICMP monitoring result: {new_icmp_monitoring}", 
+                        status="New",
+                        severity=severity,
+                        date=new_icmp_monitoring.scan_date)
+                else:
+                    Notification.objects.create(
+                        message=f"ICMP monitoring result: {new_icmp_monitoring.ip_address} is inactive", 
+                        status="New",
+                        severity="warning",
+                        date=new_icmp_monitoring.scan_date)
             self.send_notification("New ICMPdatabase entry detected")
         if new_captured_packets.exists():
             Notification.objects.create(

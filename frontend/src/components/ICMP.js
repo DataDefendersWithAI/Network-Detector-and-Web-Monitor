@@ -12,14 +12,14 @@ const ICMP = ({ onEventClick}) => {
     const fetchICMPData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:3060/api/icmp_list');
+            const response = await axios.get('http://localhost:3060/api/icmp_list/');
             setscan(response.data); // Cập nhật state với dữ liệu JSON từ API
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
         } 
-        };
+    };
 
     
 
@@ -31,10 +31,10 @@ const ICMP = ({ onEventClick}) => {
             try {
                 setLoading(true);
                 const postdata = {
-                     ip : scanquery
-                    } ;
+                        ip : scanquery
+                    };
                     console.log(postdata);
-                const response = await axios.post('http://localhost:3060/api/icmp_scan',postdata);
+                const response = await axios.post('http://localhost:3060/api/icmp_scan/', postdata);
                 if (response.status === 200) {
                     // After posting, reload the data
                     await fetchICMPData(); // Fetch the new data after POST
@@ -45,11 +45,9 @@ const ICMP = ({ onEventClick}) => {
             } catch (error) {
                 console.error('Error fetching data:', error);
                 setLoading(false);
-            }
-            
-
-            
+            }  
         };
+
         const handleDelete = async (id) => {
             try {
                 setLoading(true);
@@ -343,9 +341,8 @@ const ICMP = ({ onEventClick}) => {
                                 <div className="">
                                     <h2 className='mr-24  mb-4'> ICMP scanning IP :</h2>
                                     <div className='flex items-center '>
-                                        
                                         <input  type="text" className="bg-gray-700 text-white px-2 py-1 rounded  mr-2" name="scanquery"  value={scanquery}  onChange={handleInputChange}  />
-                                        <button className='ml-3 bg-gray-700 text-white px-2 py-1 rounded' onClick={handlepostandreload}  disabled={loading} >Search</button>
+                                        <button className='ml-3 bg-gray-700 text-white px-2 py-1 rounded' onClick={handlepostandreload}  disabled={loading} >Scan</button>
                                     </div>
                                 </div>
                             </div>

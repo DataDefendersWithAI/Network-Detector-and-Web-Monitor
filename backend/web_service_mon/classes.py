@@ -54,13 +54,13 @@ def run_website_monitor(url_list = None):
             # Debug: Print all the information
             print('URL:', url, 'Status Code:', status_code, 'Latency:', latency, 'Destination IP:', dest_ip)
         except requests.ConnectionError:
-            # If the connection fails, set status_code to 503 and latency to None
+            # If the connection fails, set status_code to 503 and latency to -1.0
             status_code = 503
-            latency = None
+            latency = -1.0
         except requests.RequestException:
-            # If the request fails, set status_code to 503 and latency to None
+            # If the request fails, set status_code to 503 and latency to -1.0
             status_code = 503
-            latency = None
+            latency = -1.0
         # If monitor_all_events is True, monitor all events and store them in the database
         if website.monitor_all_events or (website.monitor_down_events and status_code in range(400, 600)):
             WebsiteResult.objects.create(website=website, status_code=status_code, latency=latency)

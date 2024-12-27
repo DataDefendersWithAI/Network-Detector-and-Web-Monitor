@@ -1,12 +1,11 @@
-from scapy.all import *
-from scapy.all import srp, Ether, ARP
 from .models import IPdatabase, HostDatabase, IPEvent
+from scapy.layers.inet import IP, ICMP
+from scapy.all import *
 import requests
 import datetime
-from scapy.layers.inet import IP, ICMP
+import getmac
 import socket
 import pytz
-import getmac
 import nmap 
 current_timezone = pytz.timezone("Asia/Ho_Chi_Minh")
 # Create your views here.

@@ -16,7 +16,7 @@ class Website(models.Model):
 class WebsiteResult(models.Model):
     website = models.ForeignKey(Website, on_delete=models.CASCADE, to_field='url')
     status_code = models.IntegerField()
-    latency = models.FloatField()
+    latency = models.FloatField(default=-1.0)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
