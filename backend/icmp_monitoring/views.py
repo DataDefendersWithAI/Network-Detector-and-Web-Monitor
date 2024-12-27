@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from icmp_monitoring.serializers import ICMPdatabaseSerializer
+import logging 
+
+logger = logging.getLogger(__name__)
 # Create your views here.
 # Read timezone from settings.py
 from django.conf import settings
@@ -33,38 +36,41 @@ def icmp_scan(ip):
     Returns:
     None
     """
-    conf.verb=0
-    dest = ip
-    num_packets = 10
-    p = IP(dst=dest, ttl=50)/ICMP()
-    is_active = sr1(p, timeout=2, verbose=0)
-    # If the IP address is active, send 10 packets and calculate the average, minimum, and maximum round-trip time
-    if is_active is not None:
-        ans, unans = sr(p*num_packets, timeout=2, verbose=0)
-        l = list(get_times(ans))
-        avg_time = sum(l)/len(l)
-        min_time = min(l)
-        max_time = max(l)
-        ip_info, created = ICMPdatabase.objects.get_or_create(ip_address=dest)
-        if created == True:
-            ip_info.ip_address = dest
-        ip_info.scan_date = datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
-        ip_info.avg_rtt = avg_time*1000
-        ip_info.min_rtt = min_time*1000
-        ip_info.max_rtt = max_time*1000
-        ip_info.is_active = True
-        ip_info.save()
-    # If the IP address is not active, set the average, minimum, and maximum round-trip time to 0 and is_active to False
-    else:
-        ip_info, created = ICMPdatabase.objects.get_or_create(ip_address=dest)
-        if created == True:
-            ip_info.ip_address = dest
-        ip_info.scan_date = datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
-        ip_info.avg_rtt = 0
-        ip_info.min_rtt = 0
-        ip_info.max_rtt = 0
-        ip_info.is_active = False
-        ip_info.save()
+    try:
+        conf.verb=0
+        dest = ip
+        num_packets = 10
+        p = IP(dst=dest, ttl=50)/ICMP()
+        is_active = sr1(p, timeout=2, verbose=0)
+        # If the IP address is active, send 10 packets and calculate the average, minimum, and maximum round-trip time
+        if is_active is not None:
+            ans, unans = sr(p*num_packets, timeout=2, verbose=0)
+            l = list(get_times(ans))
+            avg_time = sum(l)/len(l)
+            min_time = min(l)
+            max_time = max(l)
+            ip_info, created = ICMPdatabase.objects.get_or_create(ip_address=dest)
+            if created == True:
+                ip_info.ip_address = dest
+            ip_info.scan_date = datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
+            ip_info.avg_rtt = avg_time*1000
+            ip_info.min_rtt = min_time*1000
+            ip_info.max_rtt = max_time*1000
+            ip_info.is_active = True
+            ip_info.save()
+        # If the IP address is not active, set the average, minimum, and maximum round-trip time to 0 and is_active to False
+        else:
+            ip_info, created = ICMPdatabase.objects.get_or_create(ip_address=dest)
+            if created == True:
+                ip_info.ip_address = dest
+            ip_info.scan_date = datetime.now(current_timezone).strftime("%Y-%m-%d %H:%M:%S")
+            ip_info.avg_rtt = 0
+            ip_info.min_rtt = 0
+            ip_info.max_rtt = 0
+            ip_info.is_active = False
+            ip_info.save()
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 class ICMPScan(APIView):
     """
@@ -82,10 +88,13 @@ class ICMPScan(APIView):
         if ip is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            icmp_scan(ip)
-            detail_ip = ICMPdatabase.objects.get(ip_address=ip)
-            serializer = ICMPdatabaseSerializer(detail_ip)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                icmp_scan(ip)
+                detail_ip = ICMPdatabase.objects.get(ip_address=ip)
+                serializer = ICMPdatabaseSerializer(detail_ip)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ICMPdatabase.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
     
 class ICMPList(APIView):
     """

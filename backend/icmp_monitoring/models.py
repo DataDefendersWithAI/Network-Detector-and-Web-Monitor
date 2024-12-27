@@ -21,4 +21,4 @@ class ICMPdatabase(models.Model):
     avg_rtt = models.FloatField(null=True)
 
     def __str__(self):
-        return f"{self.ip_address} - {self.is_active}"
+        return f"{self.ip_address} - Min RTT: {self.min_rtt:.2f}ms, Max RTT: {self.max_rtt:.2f}ms, Avg RTT: {self.avg_rtt:.2f}ms"

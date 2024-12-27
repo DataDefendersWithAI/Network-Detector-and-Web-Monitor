@@ -33,7 +33,7 @@ const Events = ({ onEventClick }) => {
           )
       );
       const enrichedEvents = await Promise.all(eventPromises);
-      const flattenedEvents = enrichedEvents.flat().reverse();
+      const flattenedEvents = enrichedEvents.flat();
       //console.log(enrichedEvents);
       setEvents(flattenedEvents);
       setLoading(false);
