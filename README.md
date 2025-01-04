@@ -1,4 +1,11 @@
 # Introduction
+## About project
+
+## Technologies
+* Application type: Web Application
+* Environment: Docker, but you can implement it locally (Both Linux and Windows can run, if you install all dependencies like Python, NodeJS,...)
+* Frontend: ReactJS
+* Backend: Python Django
 
 # Contributors
 | **Nickname**    | **Fullname**     | **Student ID** | **Contribute**       | **Features**                                | 
@@ -6,9 +13,7 @@
 | JakeClark       | Nguyễn Chí Thành | 22521350       | Backend and Frontend | Web Services and Internet Speedtest Monitor | 
 | SeaWind         | Nguyễn Hải Phong | 22521088       | Backend              | Devices Monitor                             | 
 | ShynBombx       | Hồ Trung Kiên    | 22520704       | Backend and Frontend | Advanced Packet Capture & Analysis          |
-| lightunderwolft | Hồ Vĩnh Nhật     | 22521013       | Frontend             | Device Monitor                              | 
-
-
+| lightunderwolft | Hồ Vĩnh Nhật     | 22521013       | Frontend             | Devices Monitor                             | 
 
 # Installation
 
