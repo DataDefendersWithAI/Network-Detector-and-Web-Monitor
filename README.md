@@ -1,12 +1,14 @@
-Oh yeah, another implementation of Pi.Alert with ReactJS and Django is here!
+# Introduction
 
-**Do you see pyproject.toml? Use uv package manager to install dependencies.**
-```bash
-uv init
-uv venv
-uv sync
-# Or: uv add -r requirements.txt
-```
+# Contributors
+| **Nickname**    | **Fullname**     | **Student ID** | **Contribute**       | **Features**                                | 
+|-----------------|------------------|----------------|----------------------|---------------------------------------------|
+| JakeClark       | Nguyễn Chí Thành | 22521350       | Backend and Frontend | Web Services and Internet Speedtest Monitor | 
+| SeaWind         | Nguyễn Hải Phong | 22521088       | Backend              | Devices Monitor                             | 
+| ShynBombx       | Hồ Trung Kiên    | 22520704       | Backend and Frontend | Advanced Packet Capture & Analysis          |
+| lightunderwolft | Hồ Vĩnh Nhật     | 22521013       | Frontend             | Device Monitor                              | 
+
+
 
 # Installation
 
@@ -58,3 +60,12 @@ Open another terminal
 ```bash
 python backend/manage.py runserver
 ```
+
+**Or if you have uv package manager, here are all commands to reproduce backend:**
+```bash
+uv init
+uv venv
+uv sync
+# Or: uv add -r requirements.txt
+```
+uv documentation: [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/)
