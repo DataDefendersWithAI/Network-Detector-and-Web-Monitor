@@ -83,3 +83,20 @@ uv documentation: [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/)
 
 ### You're All Set!
 The frontend should be running on http://localhost:3000, and the backend on http://localhost:3060.
+
+# Screenshots
+  | ![Screen 1][screen1] | ![Screen 2][screen2] |
+  | -------------------- | -------------------- |
+  | ![Screen 3][screen3] | ![Screen 4][screen4] |
+  | ![Screen 5][screen5] | ![Screen 6][screen6] |
+  | ![Screen 7][screen7] | ![Screen 8][screen8] |
+
+
+[screen1]: ./images/Devices.png
+[screen2]: ./images/Web_Services.png
+[screen3]: ./images/Internet_Speedtest.png
+[screen4]: ./images/ICMP_Monitoring.png
+[screen5]: ./images/Packet_Capture.png
+[screen6]: ./images/Traffic_Analysis.png
+[screen7]: ./images/Notifications.png
+[screen8]: ./images/Events.png
