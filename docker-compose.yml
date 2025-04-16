@@ -21,9 +21,14 @@ services:
     ports:
       - "3060:3060"
     network_mode: host
-    #runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     environment:
-      - NVIDIA_VISIBLE_DEVICES=0
+      # Optional GPU access — won't break if no GPU is present
+      - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       
     # depends_on:
