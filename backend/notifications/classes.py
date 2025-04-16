@@ -119,10 +119,14 @@ class DatabaseChangeDetector:
             last_checked_date=timezone.now()
         )
 
+        # Remove IPs from LastCheckedIP that no longer exist in IPdatabase
+        LastCheckedIP.objects.exclude(ip_address__in=IPdatabase.objects.values_list('ip_address', flat=True)).delete()
+
         # Update the LastCheckedIP table
         # LastCheckedIP.objects.all().delete()
         for new_ip_database in new_ip_databases:
-            LastCheckedIP.objects.get_or_create(id=1, ip_address=new_ip_database.ip_address)
+            LastCheckedIP.objects.get_or_create(ip_address=new_ip_database.ip_address)
+        
 
     def send_notification(self, message):
         channel_layer = get_channel_layer()

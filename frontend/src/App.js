@@ -18,7 +18,7 @@ const App = () => {
         <Route path="/" element={<DeviceDashboard />} />
         <Route path="/device-details" element={<DeviceDetails />} />
         <Route path="/web-services" element={<WebServicesMonitor />} />
-        <Route path="/package-capture" element={<PacketCapture />} />
+        <Route path="/packet-capture" element={<PacketCapture />} />
         <Route path="/traffic-analysis" element={<TrafficAnalysis />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/speedtest" element={<InternetSpeedtest />} />

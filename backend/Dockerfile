@@ -1,24 +1,26 @@
-# Use an official CUDA image to build and run the Django app
-FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+FROM ubuntu:22.04
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Install Python and other dependencies
-RUN apt update && apt install -y python3 python3-pip python-is-python3 libpcap0.8-dev tcpdump iproute2 nmap
+# Install core dependencies
+RUN apt update && apt install -y \
+    python3 python3-pip python-is-python3 \
+    libpcap0.8-dev tcpdump iproute2 nmap wget gnupg curl
 
-# Install Django
-RUN pip3 install django
+# Optional: CUDA support block — skipped on non-NVIDIA systems
+# Users with NVIDIA GPUs can uncomment and install CUDA locally, OR use `--gpus` flag with Docker runtime
+# (Recommend NOT bundling it inside the Docker image if cross-platform is a concern)
 
-# Install additional Python dependencies (if you have a requirements.txt)
+# Install Python packages
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt || true
 
-# Copy the rest of the application code
+# Copy application code
 COPY . .
 
-# Expose the Django development server port
+# Expose Django dev port
 EXPOSE 3060
 
-# Command to run the Django server
+# Run Django dev server
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:3060"]

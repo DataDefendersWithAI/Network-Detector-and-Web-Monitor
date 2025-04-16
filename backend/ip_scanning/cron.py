@@ -159,8 +159,10 @@ def my_ip_and_mac():
     return ip_address, mac_address
 
 def real_time_scan(ip, mac, url_vendor):
-    device_info, created = IPdatabase.objects.get_or_create(mac_address=mac)
-    if created == False:
+    # device_info, created = IPdatabase.objects.get_or_create(mac_address=mac).first()
+    device_info = IPdatabase.objects.filter(mac_address=mac).first()
+    if not device_info:
+        device_info = IPdatabase.objects.create(mac_address=mac)
         if device_info.device == "Unknown":
             device_info.device = detect_device(device_info.vendor, device_info.mac_address)
         if device_info.os == "Unknown":
