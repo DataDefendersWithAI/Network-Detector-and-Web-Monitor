@@ -68,7 +68,7 @@ const Sidebar = ({ isNavOpen }) => {
         <NavItem icon={Globe} label="Web Services" isNavOpen={isNavOpen} path={"/web-services"}/>
         <NavItem icon={Gauge} label="Internet Speedtest" isNavOpen={isNavOpen} path={"/speedtest"}/>
         <NavItem icon={Radio} label="ICMP Monitoring" isNavOpen={isNavOpen} path={"/ICMP"}/>
-        <NavItem icon={FileSearch} label="Package Capture" isNavOpen={isNavOpen} path={"/package-capture"}/>
+        <NavItem icon={FileSearch} label="Packet Capture" isNavOpen={isNavOpen} path={"/packet-capture"}/>
         <NavItem icon={ChartNetwork} label="Traffic Analysis" isNavOpen={isNavOpen} path={"/traffic-analysis"}/>
         <NavItem icon={Bell} label="Notifications" badge={newCount} isNavOpen={isNavOpen} path={"/notifications"}/>
         <h2 className={`px-4 py-2 text-sm font-semibold text-gray-400 uppercase mt-4 transition-opacity duration-300 ${isNavOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>Events & Journal</h2>
